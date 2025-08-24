@@ -55,20 +55,38 @@ export default function Home() {
       const result = await response.json();
 
       if (result.success) {
-        setSaved(result.data);
+        // 将文章数据保存到本地存储
+        const articleRecord = {
+          slug: result.data.slug,
+          title: result.data.title,
+          content: result.data.content,
+          markdown: result.data.markdown,
+          url: result.data.url,
+          savedAt: new Date().toISOString()
+        };
+
+        // 获取现有的文章列表
+        const existingArticles = JSON.parse(localStorage.getItem('saved-articles') || '[]');
+        
+        // 添加新文章
+        existingArticles.push(articleRecord);
+        
+        // 保存回本地存储
+        localStorage.setItem('saved-articles', JSON.stringify(existingArticles));
+        
+        // 保存单独的文章内容（用于文章页面访问）
+        localStorage.setItem(`article-${result.data.slug}`, JSON.stringify(articleRecord));
+
+        setSaved({
+          path: `localStorage: article-${result.data.slug}`,
+          url: result.data.url
+        });
         setArticle(null);
       } else {
-        let errorMessage = result.error || '保存失败';
-        
-        // 如果有调试信息，显示更详细的错误
-        if (result.debug) {
-          errorMessage += `\n调试信息: 缺少字段 ${result.debug.missingFields?.join(', ') || '未知'}`;
-          console.log('保存失败的调试信息:', result.debug);
-        }
-        
-        setError(errorMessage);
+        setError(result.error || '保存失败');
       }
-    } catch {
+    } catch (error) {
+      console.error('保存失败:', error);
       setError('保存失败，请稍后重试');
     } finally {
       setLoading(false);

@@ -1,25 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 import { ArticleData } from '@/lib/scraper';
 
 export async function POST(request: NextRequest) {
   try {
     const articleData: ArticleData = await request.json();
     
-    // 添加详细的调试日志
     console.log('=== SAVE API DEBUG ===');
     console.log('收到的完整数据:', JSON.stringify(articleData, null, 2));
-    console.log('数据字段检查:');
-    console.log('- title:', articleData.title ? `存在 (长度: ${articleData.title.length})` : '缺失');
-    console.log('- content:', articleData.content ? `存在 (长度: ${articleData.content.length})` : '缺失');
-    console.log('- slug:', articleData.slug ? `存在: "${articleData.slug}"` : '缺失');
-    console.log('- url:', articleData.url ? `存在: "${articleData.url}"` : '缺失');
-    console.log('- author:', articleData.author ? `存在: "${articleData.author}"` : '缺失');
-    console.log('- publishDate:', articleData.publishDate ? `存在: "${articleData.publishDate}"` : '缺失');
-    console.log('- description:', articleData.description ? `存在 (长度: ${articleData.description.length})` : '缺失');
-
-    // 检查必需字段，提供更详细的错误信息
+    
+    // 检查必需字段
     const missingFields = [];
     if (!articleData.title) missingFields.push('title');
     if (!articleData.content) missingFields.push('content');
@@ -31,55 +20,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: errorMessage,
-          debug: {
-            missingFields,
-            receivedData: {
-              title: articleData.title || null,
-              content: articleData.content ? `${articleData.content.substring(0, 100)}...` : null,
-              slug: articleData.slug || null,
-              url: articleData.url || null
-            }
-          }
+          success: false
         },
         { status: 400 }
       );
     }
 
-    const articlesDir = path.join(process.cwd(), 'articles');
-    
-    try {
-      await fs.access(articlesDir);
-    } catch {
-      await fs.mkdir(articlesDir, { recursive: true });
-    }
-
+    // 在 Serverless 环境中，我们不能保存到文件系统
+    // 而是将数据返回给前端，让前端处理保存
     const frontmatter = generateFrontmatter(articleData);
     const fullContent = `${frontmatter}\n\n${articleData.content}`;
 
-    const filePath = path.join(articlesDir, `${articleData.slug}.md`);
-    
-    let finalPath = filePath;
-    let counter = 1;
-    while (true) {
-      try {
-        await fs.access(finalPath);
-        finalPath = path.join(articlesDir, `${articleData.slug}-${counter}.md`);
-        counter++;
-      } catch {
-        break;
-      }
-    }
-
-    await fs.writeFile(finalPath, fullContent, 'utf-8');
-
-    const relativePath = path.relative(process.cwd(), finalPath);
+    // 生成唯一的文章ID
+    const timestamp = Date.now();
+    const finalSlug = `${articleData.slug}-${timestamp}`;
 
     return NextResponse.json({
       success: true,
       data: {
-        path: relativePath,
-        slug: path.basename(finalPath, '.md'),
-        url: `/${path.basename(finalPath, '.md')}`
+        slug: finalSlug,
+        title: articleData.title,
+        content: fullContent,
+        url: `/${finalSlug}`,
+        markdown: fullContent
       }
     });
 
