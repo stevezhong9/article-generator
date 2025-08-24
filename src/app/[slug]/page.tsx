@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 interface ArticlePageProps {
   params: Promise<{
@@ -140,12 +141,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           {/* 底部操作 */}
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
             <div className="flex justify-between items-center">
-              <a
+              <Link
                 href="/"
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
                 ← 返回首页
-              </a>
+              </Link>
               
               <div className="text-sm text-gray-500">
                 文件：{slug}.md
