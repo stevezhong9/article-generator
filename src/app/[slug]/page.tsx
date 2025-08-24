@@ -34,7 +34,7 @@ async function getArticle(slug: string): Promise<ArticleData | null> {
     const fileContent = await fs.readFile(filePath, 'utf-8');
     
     // 解析frontmatter
-    const frontmatterRegex = /^---\s*\n(.*?)\n---\s*\n(.*)/s;
+    const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)/;
     const match = fileContent.match(frontmatterRegex);
     
     if (!match) {
