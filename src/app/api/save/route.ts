@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ArticleData } from '@/lib/scraper';
 import { MarketingData } from '@/components/MarketingInfo';
-import { kv } from '@vercel/kv';
+import { ArticleSupabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,55 +43,33 @@ export async function POST(request: NextRequest) {
     const timestamp = Date.now();
     const finalSlug = `${fullArticleData.slug}-${timestamp}`;
 
-    // 准备存储的文章数据
-    const articleRecord = {
-      slug: finalSlug,
-      title: fullArticleData.title,
-      content: fullArticleData.content, // 原始HTML内容
-      markdown: fullContent, // 带frontmatter的完整内容
-      url: `/${finalSlug}`,
-      author: fullArticleData.author,
-      publishDate: fullArticleData.publishDate,
-      description: fullArticleData.description,
-      sourceUrl: fullArticleData.url,
-      marketingData: marketingData || null,
-      savedAt: new Date().toISOString()
-    };
+    // 这个变量已经不再需要，因为我们直接使用Postgres存储
 
     try {
-      // 检查是否在生产环境且有KV配置
-      if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-        // 保存单篇文章
-        await kv.set(`article:${finalSlug}`, articleRecord);
-        
-        // 更新文章列表（保存最近10篇）
-        const recentArticles = await kv.get('articles:recent') as unknown[] || [];
-        
-        // 添加新文章到列表开头
-        const articleSummary = {
-          slug: finalSlug,
-          title: articleData.title,
-          url: `/${finalSlug}`,
-          savedAt: articleRecord.savedAt
-        };
-        
-        recentArticles.unshift(articleSummary);
-        
-        // 只保留最近10篇
-        if (recentArticles.length > 10) {
-          recentArticles.splice(10);
-        }
-        
-        await kv.set('articles:recent', recentArticles);
-        
-        console.log(`文章已保存到KV: ${finalSlug}`);
-      } else {
-        console.log('开发环境：跳过KV存储，使用前端localStorage');
-      }
+      // 保存文章到Supabase
+      const savedArticle = await ArticleSupabase.createArticle({
+        slug: finalSlug,
+        title: fullArticleData.title,
+        content: fullArticleData.content,
+        description: fullArticleData.description,
+        author: fullArticleData.author,
+        publish_date: fullArticleData.publishDate,
+        source_url: fullArticleData.url,
+        marketing_data: marketingData || undefined
+      });
       
-    } catch (kvError) {
-      console.error('KV存储错误:', kvError);
-      // KV失败时回退到返回数据让前端处理
+      console.log(`文章已保存到Supabase: ${savedArticle.slug}`);
+      
+    } catch (supabaseError) {
+      console.error('Supabase存储错误:', supabaseError);
+      // Supabase失败时返回错误
+      return NextResponse.json(
+        { 
+          error: `Supabase保存失败: ${supabaseError instanceof Error ? supabaseError.message : 'Unknown error'}`,
+          success: false
+        },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({

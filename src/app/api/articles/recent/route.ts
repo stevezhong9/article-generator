@@ -1,18 +1,20 @@
 import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { ArticleSupabase } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    // 检查是否有KV配置
-    if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-      console.log('开发环境：返回空的最近文章列表');
-      return NextResponse.json({
-        success: true,
-        data: []
-      });
-    }
-
-    const recentArticles = await kv.get('articles:recent') as unknown[] || [];
+    // 从Supabase获取最近10篇文章
+    const articles = await ArticleSupabase.getRecentArticles(10);
+    
+    // 转换格式以兼容前端
+    const recentArticles = articles.map(article => ({
+      slug: article.slug,
+      title: article.title,
+      url: `/${article.slug}`,
+      savedAt: article.created_at,
+      description: article.description,
+      author: article.author
+    }));
     
     return NextResponse.json({
       success: true,
