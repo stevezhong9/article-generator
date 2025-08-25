@@ -85,27 +85,6 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
     window.open(linkedInUrl, '_blank', 'width=600,height=400');
   };
 
-  const getThemeStyles = () => {
-    switch (selectedTheme) {
-      case 'dark':
-        return 'bg-gray-900 text-white';
-      case 'gradient':
-        return 'bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-900';
-      default:
-        return 'bg-white text-gray-900';
-    }
-  };
-
-  const getCardStyles = () => {
-    switch (selectedTheme) {
-      case 'dark':
-        return 'bg-gray-800 border-gray-700';
-      case 'gradient':
-        return 'bg-white/80 backdrop-blur border-white/20 shadow-xl';
-      default:
-        return 'bg-white border-gray-200 shadow-lg';
-    }
-  };
 
   // 简化HTML内容，移除复杂标签
   const getCleanContent = (htmlContent: string) => {
@@ -177,20 +156,61 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
         )}
       </div>
 
-      {/* 隐藏的长图模板 */}
+      {/* 隐藏的长图模板 - 使用内联样式避免 lab() 颜色函数 */}
       <div 
         ref={imageRef}
-        className={`fixed -left-[9999px] w-[800px] min-h-screen p-12 ${getThemeStyles()}`}
-        style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+        style={{
+          position: 'fixed',
+          left: '-9999px',
+          width: '800px',
+          minHeight: '100vh',
+          padding: '48px',
+          backgroundColor: selectedTheme === 'dark' ? '#1a1a1a' : selectedTheme === 'gradient' ? '#f8fafc' : '#ffffff',
+          color: selectedTheme === 'dark' ? '#ffffff' : '#1f2937',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        }}
       >
-        <div className={`rounded-2xl border-2 p-8 ${getCardStyles()}`}>
+        <div 
+          style={{
+            borderRadius: '16px',
+            border: '2px solid',
+            borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb',
+            padding: '32px',
+            backgroundColor: selectedTheme === 'dark' ? '#1f2937' : selectedTheme === 'gradient' ? 'rgba(255,255,255,0.9)' : '#ffffff',
+            boxShadow: selectedTheme === 'gradient' ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+          }}
+        >
           {/* 标题部分 */}
-          <div className="text-center mb-8 border-b pb-6" 
-               style={{ borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb' }}>
-            <h1 className="text-4xl font-bold mb-4 leading-tight">
+          <div 
+            style={{
+              textAlign: 'center',
+              marginBottom: '32px',
+              borderBottom: '1px solid',
+              borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb',
+              paddingBottom: '24px'
+            }}
+          >
+            <h1 
+              style={{
+                fontSize: '36px',
+                fontWeight: 'bold',
+                marginBottom: '16px',
+                lineHeight: '1.2',
+                color: selectedTheme === 'dark' ? '#ffffff' : '#1f2937'
+              }}
+            >
               {article.title}
             </h1>
-            <div className="flex justify-center items-center space-x-4 text-sm opacity-75">
+            <div 
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                fontSize: '14px',
+                opacity: 0.75,
+                gap: '16px'
+              }}
+            >
               <span>📅 {new Date(article.savedAt).toLocaleDateString('zh-CN')}</span>
               <span>•</span>
               <span>📄 文章转载工具</span>
@@ -198,20 +218,40 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
           </div>
 
           {/* 内容部分 */}
-          <div className="text-lg leading-relaxed space-y-4">
+          <div 
+            style={{
+              fontSize: '18px',
+              lineHeight: '1.6'
+            }}
+          >
             {getCleanContent(article.content)
               .split('\n\n')
               .slice(0, 15) // 限制段落数量
               .map((paragraph, index) => (
-                <p key={index} className="mb-4">
+                <p 
+                  key={index} 
+                  style={{
+                    marginBottom: '16px',
+                    color: selectedTheme === 'dark' ? '#e5e7eb' : '#374151'
+                  }}
+                >
                   {paragraph.trim()}
                 </p>
               ))}
           </div>
 
           {/* 底部标识 */}
-          <div className="mt-8 pt-6 border-t text-center text-sm opacity-60"
-               style={{ borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb' }}>
+          <div 
+            style={{
+              marginTop: '32px',
+              paddingTop: '24px',
+              borderTop: '1px solid',
+              borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb',
+              textAlign: 'center',
+              fontSize: '14px',
+              opacity: 0.6
+            }}
+          >
             <p>由文章转载工具生成 • {window.location.origin}</p>
           </div>
         </div>
