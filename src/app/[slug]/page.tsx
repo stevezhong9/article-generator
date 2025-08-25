@@ -126,13 +126,39 @@ export default function ArticlePage({ params }: ArticlePageProps) {
 
     function loadFromLocalStorage() {
       try {
+        console.log('🔍 尝试加载文章 slug:', slug);
+        console.log('🔑 查找键名:', `article-${slug}`);
+        
+        // 列出所有保存的文章键名用于调试
+        const allKeys = Object.keys(localStorage).filter(key => key.startsWith('article-'));
+        console.log('📦 所有保存的文章:', allKeys);
+        
         const articleData = localStorage.getItem(`article-${slug}`);
         if (articleData) {
           const parsedArticle = JSON.parse(articleData) as ArticleRecord;
-          console.log('从localStorage读取文章:', parsedArticle.title);
+          console.log('✅ 从localStorage读取文章成功:', parsedArticle.title);
           setArticle(parsedArticle);
         } else {
-          console.log('文章未找到:', slug);
+          console.log('❌ 文章未找到:', slug);
+          console.log('💡 尝试模糊匹配...');
+          
+          // 尝试模糊匹配 - 查找包含相似slug的文章
+          const fuzzyMatch = allKeys.find(key => {
+            const keySlug = key.replace('article-', '');
+            return keySlug.includes(slug) || slug.includes(keySlug);
+          });
+          
+          if (fuzzyMatch) {
+            console.log('🎯 找到模糊匹配:', fuzzyMatch);
+            const fuzzyData = localStorage.getItem(fuzzyMatch);
+            if (fuzzyData) {
+              const parsedArticle = JSON.parse(fuzzyData) as ArticleRecord;
+              console.log('✅ 模糊匹配成功:', parsedArticle.title);
+              setArticle(parsedArticle);
+              return;
+            }
+          }
+          
           setArticle(null);
         }
       } catch (error) {
