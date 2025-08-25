@@ -318,7 +318,7 @@ export default function ArticleShareModal({ isOpen, onClose, article }: ArticleS
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <h5 className="font-medium text-blue-900 mb-2">🚀 分享到社交媒体：</h5>
                   <div className="text-sm text-blue-800 space-y-1">
-                    <p><span className="font-medium">步骤 1：</span>点击"下载图片"保存长图到本地</p>
+                    <p><span className="font-medium">步骤 1：</span>点击&ldquo;下载图片&rdquo;保存长图到本地</p>
                     <p><span className="font-medium">步骤 2：</span>点击社交媒体按钮，自动打开发帖界面</p>
                     <p><span className="font-medium">步骤 3：</span>上传刚下载的图片，发布帖子</p>
                   </div>

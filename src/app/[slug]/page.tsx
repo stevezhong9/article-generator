@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Metadata } from 'next';
 import LongImageGenerator from '@/components/LongImageGenerator';
 import RecentArticles from '@/components/RecentArticles';
 import { MarketingData } from '@/components/MarketingInfo';
@@ -143,19 +142,6 @@ export default function ArticlePage({ params }: ArticlePageProps) {
     }
   }, [slug]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">正在加载文章...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // 生成结构化数据
   const generateStructuredData = () => {
     if (!article) return {};
@@ -257,7 +243,20 @@ export default function ArticlePage({ params }: ArticlePageProps) {
       }
       structuredData.textContent = JSON.stringify(generateStructuredData());
     }
-  }, [article]);
+  }, [article, generateStructuredData]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">正在加载文章...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!article) {
     return (
