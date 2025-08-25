@@ -156,25 +156,10 @@ export default function ArticlePage({ params }: ArticlePageProps) {
     );
   }
 
-  if (!article) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">文章未找到</h1>
-          <p className="text-gray-600 mb-8">请检查链接是否正确，或者文章是否已被删除。</p>
-          <Link
-            href="/"
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            返回首页
-          </Link>
-        </div>
-      </div>
-    );
-  }
-  
   // 生成结构化数据
   const generateStructuredData = () => {
+    if (!article) return {};
+    
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || typeof window !== 'undefined' ? window.location.origin : '';
     const articleUrl = `${baseUrl}/${article.slug}`;
     
@@ -273,6 +258,23 @@ export default function ArticlePage({ params }: ArticlePageProps) {
       structuredData.textContent = JSON.stringify(generateStructuredData());
     }
   }, [article]);
+
+  if (!article) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">文章未找到</h1>
+          <p className="text-gray-600 mb-8">请检查链接是否正确，或者文章是否已被删除。</p>
+          <Link
+            href="/"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            返回首页
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>

@@ -13,7 +13,7 @@ async function getArticle(slug: string) {
     // 在服务端尝试从KV获取文章数据
     if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
       const article = await kv.get(`article:${slug}`);
-      return article as any;
+      return article as Record<string, unknown> | null;
     }
     return null;
   } catch (error) {
@@ -35,9 +35,10 @@ export async function generateMetadata({ params }: ArticleLayoutProps): Promise<
     };
   }
 
-  const title = `${article.title} - 文章转载工具`;
-  const description = article.description || `阅读「${article.title}」的完整内容。通过文章转载工具生成的高质量文章页面。`;
-  const siteName = article.marketingData?.companyName || '文章转载工具';
+  const articleData = article as any;
+  const title = `${articleData.title || 'Untitled'} - 文章转载工具`;
+  const description = articleData.description || `阅读「${articleData.title || 'Untitled'}」的完整内容。通过文章转载工具生成的高质量文章页面。`;
+  const siteName = articleData.marketingData?.companyName || '文章转载工具';
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://your-domain.vercel.app';
   const articleUrl = `${baseUrl}/${slug}`;
   

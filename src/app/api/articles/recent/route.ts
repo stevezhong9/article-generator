@@ -12,7 +12,7 @@ export async function GET() {
       });
     }
 
-    const recentArticles = await kv.get('articles:recent') as any[] || [];
+    const recentArticles = await kv.get('articles:recent') as unknown[] || [];
     
     return NextResponse.json({
       success: true,

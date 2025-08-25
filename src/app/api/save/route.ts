@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         await kv.set(`article:${finalSlug}`, articleRecord);
         
         // 更新文章列表（保存最近10篇）
-        const recentArticles = await kv.get('articles:recent') as any[] || [];
+        const recentArticles = await kv.get('articles:recent') as unknown[] || [];
         
         // 添加新文章到列表开头
         const articleSummary = {
