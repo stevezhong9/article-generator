@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import LongImageGenerator from '@/components/LongImageGenerator';
 
 interface ArticlePageProps {
   params: Promise<{
@@ -22,6 +23,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
   const [article, setArticle] = useState<ArticleRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [slug, setSlug] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'article' | 'longimage'>('article');
 
   useEffect(() => {
     async function loadSlug() {
@@ -94,7 +96,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               {article.title}
             </h1>
             
-            <div className="flex flex-wrap items-center text-sm text-gray-600 space-y-2">
+            <div className="flex flex-wrap items-center text-sm text-gray-600 space-y-2 mb-6">
               <div className="w-full sm:w-auto sm:mr-6">
                 <span className="font-medium">保存时间：</span>
                 <span>{new Date(article.savedAt).toLocaleString('zh-CN')}</span>
@@ -105,14 +107,44 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                 <span className="text-blue-600">本地浏览器存储</span>
               </div>
             </div>
+
+            {/* 标签切换 */}
+            <div className="flex border-b">
+              <button
+                onClick={() => setActiveTab('article')}
+                className={`px-4 py-2 font-medium transition-colors ${
+                  activeTab === 'article'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                📄 阅读文章
+              </button>
+              <button
+                onClick={() => setActiveTab('longimage')}
+                className={`px-4 py-2 font-medium transition-colors ${
+                  activeTab === 'longimage'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                🖼️ 生成长图
+              </button>
+            </div>
           </div>
           
-          {/* 文章内容 */}
+          {/* 内容区域 */}
           <div className="px-6 py-8">
-            <div 
-              className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: article.content }}
-            />
+            {activeTab === 'article' && (
+              <div 
+                className="prose prose-lg max-w-none"
+                dangerouslySetInnerHTML={{ __html: article.content }}
+              />
+            )}
+            
+            {activeTab === 'longimage' && (
+              <LongImageGenerator article={article} />
+            )}
           </div>
           
           {/* 底部操作 */}
