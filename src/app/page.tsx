@@ -66,12 +66,17 @@ export default function Home() {
       const result = await response.json();
 
       if (result.success) {
-        // 文章已保存到服务器，直接使用返回的URL
+        // 文章已保存到服务器，更新文章数据包含finalSlug
+        const updatedArticle = {
+          ...articleData,
+          finalSlug: result.data.slug
+        };
+        setArticle(updatedArticle);
+        
         setSaved({
           path: `服务端存储`,
           url: result.data.url
         });
-        setArticle(null);
       } else {
         setError(result.error || '保存失败');
       }

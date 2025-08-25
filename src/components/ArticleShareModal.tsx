@@ -60,15 +60,15 @@ export default function ArticleShareModal({ isOpen, onClose, article }: ArticleS
   const downloadImage = () => {
     if (!generatedImage) return;
     const link = document.createElement('a');
-    link.download = `${article.slug}-long-image.png`;
+    link.download = `${article.finalSlug || article.slug}-long-image.png`;
     link.href = generatedImage;
     link.click();
   };
 
 
   const shareToTwitter = () => {
-    // 生成简洁的文章链接（原文链接）
-    const articleURL = `${window.location.origin}/${article.slug}`;
+    // 使用带时间戳的完整URL
+    const articleURL = `${window.location.origin}/${article.finalSlug || article.slug}`;
     
     // 构建推文内容
     const tweetText = `📄 ${article.title}
@@ -95,8 +95,8 @@ export default function ArticleShareModal({ isOpen, onClose, article }: ArticleS
   };
 
   const shareToLinkedIn = () => {
-    // 生成简洁的文章链接
-    const articleURL = `${window.location.origin}/${article.slug}`;
+    // 使用带时间戳的完整URL
+    const articleURL = `${window.location.origin}/${article.finalSlug || article.slug}`;
     
     // LinkedIn 分享参数
     const linkedInURL = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleURL)}`;

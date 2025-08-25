@@ -18,6 +18,7 @@ export interface ArticleData {
   description?: string;
   url: string;
   slug: string;
+  finalSlug?: string;
   marketingData?: MarketingData | null;
 }
 
