@@ -102,105 +102,54 @@ export default function Home() {
   // 预生成bookmarklet代码避免重复渲染
   const bookmarkletCode = useMemo(() => {
     return `javascript:(function(){
-      try {
-        var title = document.title || 'Untitled';
-        var url = window.location.href;
-        var description = '';
-        var metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) {
-          description = metaDesc.getAttribute('content') || '';
-        }
-        
-        // 防止重复创建弹窗
-        var existingPopup = document.getElementById('share-popup-bookmarklet');
-        if (existingPopup) {
-          existingPopup.remove();
-        }
-        
-        // 创建弹窗
-        var popup = document.createElement('div');
-        popup.id = 'share-popup-bookmarklet';
-        popup.style.cssText = 'position:fixed;top:20px;right:20px;width:350px;background:#fff;border:2px solid #007AFF;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.2);z-index:999999;font-family:system-ui,-apple-system,sans-serif;';
-        
-        // 构建HTML内容
-        var htmlContent = '<div style="padding:20px;">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">' +
-            '<h3 style="margin:0;color:#1f2937;font-size:16px;font-weight:600;">📤 一键转发</h3>' +
-            '<button id="closePopupBtn" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280;">×</button>' +
-          '</div>' +
-          '<div style="margin-bottom:15px;">' +
-            '<div style="font-size:14px;color:#374151;font-weight:500;margin-bottom:8px;">📝 文章标题:</div>' +
-            '<div style="font-size:13px;color:#6b7280;line-height:1.4;max-height:40px;overflow:hidden;">' + title + '</div>' +
-          '</div>' +
-          '<div style="margin-bottom:20px;">' +
-            '<div style="font-size:14px;color:#374151;font-weight:500;margin-bottom:8px;">🔗 文章链接:</div>' +
-            '<div style="font-size:12px;color:#6b7280;word-break:break-all;max-height:40px;overflow:hidden;">' + url + '</div>' +
-          '</div>' +
-          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
-            '<a id="shareTwitterBtn" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;padding:10px;background:#1DA1F2;color:white;text-decoration:none;border-radius:8px;font-size:13px;font-weight:500;">' +
-              '<span style="margin-right:6px;">🐦</span>X/Twitter' +
-            '</a>' +
-            '<a id="shareLinkedInBtn" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;padding:10px;background:#0077B5;color:white;text-decoration:none;border-radius:8px;font-size:13px;font-weight:500;">' +
-              '<span style="margin-right:6px;">💼</span>LinkedIn' +
-            '</a>' +
-          '</div>' +
-          '<div style="margin-top:15px;text-align:center;">' +
-            '<a href="#" id="toolLinkBtn" style="font-size:12px;color:#6b7280;text-decoration:none;cursor:pointer;">转载工具 →</a>' +
-          '</div>' +
-        '</div>';
-        
-        popup.innerHTML = htmlContent;
-        document.body.appendChild(popup);
-        
-        // 设置分享链接
-        var twitterText = encodeURIComponent('📄 推荐阅读: ' + title + ' ' + url);
-        var linkedInText = encodeURIComponent(title);
-        var linkedInUrl = encodeURIComponent(url);
-        
-        var twitterBtn = document.getElementById('shareTwitterBtn');
-        var linkedInBtn = document.getElementById('shareLinkedInBtn');
-        var closeBtn = document.getElementById('closePopupBtn');
-        var toolBtn = document.getElementById('toolLinkBtn');
-        
-        if (twitterBtn) {
-          twitterBtn.href = 'https://twitter.com/intent/tweet?text=' + twitterText;
-        }
-        
-        if (linkedInBtn) {
-          linkedInBtn.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + linkedInUrl + '&title=' + linkedInText;
-        }
-        
-        // 关闭按钮事件
-        if (closeBtn) {
-          closeBtn.onclick = function(e) {
-            e.preventDefault();
-            if (document.body.contains(popup)) {
-              document.body.removeChild(popup);
-            }
-          };
-        }
-        
-        // 工具链接事件
-        if (toolBtn) {
-          toolBtn.onclick = function(e) {
-            e.preventDefault();
-            var toolUrl = 'https://sharetox.com';
-            window.open(toolUrl, '_blank');
-          };
-        }
-        
-        // 10秒后自动关闭
-        setTimeout(function() {
-          if (document.body.contains(popup)) {
-            document.body.removeChild(popup);
-          }
-        }, 10000);
-        
-      } catch (error) {
-        alert('一键转发工具出现错误: ' + error.message);
-        console.error('Bookmarklet error:', error);
-      }
-    })();`;
+try{
+console.log('一键转发工具启动...');
+var t=document.title||'Untitled';
+var u=window.location.href;
+var d=document.querySelector('meta[name="description"]');
+var desc=d?d.getAttribute('content')||'':'';
+var e=document.getElementById('share-popup-bookmarklet');
+if(e)e.remove();
+var p=document.createElement('div');
+p.id='share-popup-bookmarklet';
+p.style.cssText='position:fixed;top:20px;right:20px;width:320px;background:#fff;border:2px solid #007AFF;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.3);z-index:2147483647;font-family:-apple-system,BlinkMacSystemFont,sans-serif;';
+p.innerHTML='<div style="padding:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h3 style="margin:0;color:#1f2937;font-size:16px;font-weight:600;">📤 一键转发</h3><button id="closeBtnBookmarklet" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280;">×</button></div><div style="margin-bottom:12px;"><div style="font-size:13px;color:#374151;margin-bottom:4px;">📝 '+t.substring(0,50)+(t.length>50?'...':'')+'</div><div style="font-size:11px;color:#6b7280;">正在生成分享链接...</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><button id="twitterBtnBookmarklet" style="display:flex;align-items:center;justify-content:center;padding:8px;background:#1DA1F2;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🐦 Twitter</button><button id="linkedinBtnBookmarklet" style="display:flex;align-items:center;justify-content:center;padding:8px;background:#0077B5;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">💼 LinkedIn</button></div><div style="margin-top:12px;text-align:center;"><a href="https://sharetox.com" target="_blank" style="font-size:11px;color:#6b7280;text-decoration:none;">SharetoX 转载工具</a></div></div>';
+document.body.appendChild(p);
+document.getElementById('closeBtnBookmarklet').onclick=function(){p.remove();};
+function saveAndShare(){
+console.log('正在保存文章到SharetoX...');
+var content=document.body.innerHTML.substring(0,5000);
+var slug=t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,50);
+fetch('https://sharetox.com/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u,title:t,content:'<p>'+desc+'</p><div>'+content+'</div>',slug:slug,description:desc})}).then(function(r){return r.json();}).then(function(data){
+console.log('保存结果:',data);
+if(data.success){
+var shareUrl='https://sharetox.com'+data.data.url;
+var twitterText=encodeURIComponent('📄 '+t+' '+shareUrl);
+var linkedinUrl=encodeURIComponent(shareUrl);
+document.getElementById('twitterBtnBookmarklet').onclick=function(){window.open('https://twitter.com/intent/tweet?text='+twitterText,'_blank');};
+document.getElementById('linkedinBtnBookmarklet').onclick=function(){window.open('https://www.linkedin.com/sharing/share-offsite/?url='+linkedinUrl,'_blank');};
+console.log('分享链接已生成:',shareUrl);
+}else{
+console.error('保存失败:',data.error);
+var fallbackTwitter=encodeURIComponent('📄 '+t+' '+u);
+document.getElementById('twitterBtnBookmarklet').onclick=function(){window.open('https://twitter.com/intent/tweet?text='+fallbackTwitter,'_blank');};
+document.getElementById('linkedinBtnBookmarklet').onclick=function(){window.open('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(u),'_blank');};
+}
+}).catch(function(err){
+console.error('保存请求失败:',err);
+var fallbackTwitter=encodeURIComponent('📄 '+t+' '+u);
+document.getElementById('twitterBtnBookmarklet').onclick=function(){window.open('https://twitter.com/intent/tweet?text='+fallbackTwitter,'_blank');};
+document.getElementById('linkedinBtnBookmarklet').onclick=function(){window.open('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(u),'_blank');};
+});
+}
+saveAndShare();
+setTimeout(function(){if(document.body.contains(p))p.remove();},15000);
+console.log('一键转发工具加载完成');
+}catch(err){
+console.error('Bookmarklet error:',err);
+alert('一键转发工具加载失败: '+err.message);
+}
+})();`;
   }, []);
 
   return (
