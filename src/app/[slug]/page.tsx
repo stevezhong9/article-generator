@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import LongImageGenerator from '@/components/LongImageGenerator';
 import RecentArticles from '@/components/RecentArticles';
@@ -143,7 +143,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
   }, [slug]);
 
   // 生成结构化数据
-  const generateStructuredData = () => {
+  const generateStructuredData = useCallback(() => {
     if (!article) return {};
     
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || typeof window !== 'undefined' ? window.location.origin : '';
@@ -178,7 +178,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
       isAccessibleForFree: true,
       genre: '转载文章'
     };
-  };
+  }, [article]);
 
   // 动态更新页面标题和元数据
   useEffect(() => {

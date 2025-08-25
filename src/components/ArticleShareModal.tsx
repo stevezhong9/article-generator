@@ -65,21 +65,6 @@ export default function ArticleShareModal({ isOpen, onClose, article }: ArticleS
     link.click();
   };
 
-  const generateShareableURL = () => {
-    try {
-      const shareData = {
-        title: article.title,
-        content: getCleanContent(article.content).substring(0, 1000),
-        savedAt: new Date().toISOString(),
-        slug: article.slug
-      };
-      
-      const encoded = btoa(encodeURIComponent(JSON.stringify(shareData)));
-      return `${window.location.origin}/${article.slug}?data=${encoded}`;
-    } catch (error) {
-      return `${window.location.origin}/${article.slug}`;
-    }
-  };
 
   const shareToTwitter = () => {
     // 生成简洁的文章链接（原文链接）
@@ -122,7 +107,7 @@ export default function ArticleShareModal({ isOpen, onClose, article }: ArticleS
       alert(`✅ LinkedIn 分享窗口已打开！
 
 📋 接下来的操作：
-1. 🖼️ 点击"添加媒体"按钮，上传刚才下载的长图
+1. 🖼️ 点击&ldquo;添加媒体&rdquo;按钮，上传刚才下载的长图
 2. 📝 添加您的评论和见解
 3. 🔗 文章链接已自动添加
 4. 📤 点击发布即可
@@ -131,16 +116,6 @@ export default function ArticleShareModal({ isOpen, onClose, article }: ArticleS
     }, 1000);
   };
 
-  const getCleanContent = (htmlContent: string) => {
-    if (typeof document !== 'undefined') {
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = htmlContent;
-      tempDiv.querySelectorAll('script, style, img, video').forEach(el => el.remove());
-      const textContent = tempDiv.textContent || tempDiv.innerText || '';
-      return textContent.replace(/\s+/g, ' ').trim();
-    }
-    return htmlContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-  };
 
   // 处理HTML内容并添加内联样式
   const getStyledContent = (htmlContent: string, theme: ThemeType) => {

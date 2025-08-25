@@ -35,7 +35,17 @@ export async function generateMetadata({ params }: ArticleLayoutProps): Promise<
     };
   }
 
-  const articleData = article as any;
+  const articleData = article as {
+    title?: string;
+    description?: string;
+    author?: string;
+    publishDate?: string;
+    savedAt?: string;
+    marketingData?: {
+      companyName?: string;
+      logo?: string;
+    };
+  };
   const title = `${articleData.title || 'Untitled'} - 文章转载工具`;
   const description = articleData.description || `阅读「${articleData.title || 'Untitled'}」的完整内容。通过文章转载工具生成的高质量文章页面。`;
   const siteName = articleData.marketingData?.companyName || '文章转载工具';
@@ -45,13 +55,13 @@ export async function generateMetadata({ params }: ArticleLayoutProps): Promise<
   return {
     title,
     description,
-    authors: article.author ? [{ name: article.author }] : undefined,
+    authors: articleData.author ? [{ name: articleData.author }] : undefined,
     keywords: [
-      article.title,
+      articleData.title || 'article',
       '文章转载',
       '内容分享',
       siteName,
-      ...(article.author ? [article.author] : [])
+      ...(articleData.author ? [articleData.author] : [])
     ],
     
     // Open Graph
@@ -61,11 +71,11 @@ export async function generateMetadata({ params }: ArticleLayoutProps): Promise<
       url: articleUrl,
       siteName,
       type: 'article',
-      publishedTime: article.publishDate || article.savedAt,
-      authors: article.author ? [article.author] : undefined,
-      images: article.marketingData?.logo ? [
+      publishedTime: articleData.publishDate || articleData.savedAt,
+      authors: articleData.author ? [articleData.author] : undefined,
+      images: articleData.marketingData?.logo ? [
         {
-          url: article.marketingData.logo,
+          url: articleData.marketingData.logo,
           width: 800,
           height: 600,
           alt: `${siteName} Logo`,
@@ -78,8 +88,8 @@ export async function generateMetadata({ params }: ArticleLayoutProps): Promise<
       card: 'summary_large_image',
       title,
       description,
-      creator: article.author ? `@${article.author}` : undefined,
-      images: article.marketingData?.logo ? [article.marketingData.logo] : undefined,
+      creator: articleData.author ? `@${articleData.author}` : undefined,
+      images: articleData.marketingData?.logo ? [articleData.marketingData.logo] : undefined,
     },
 
     // 其他SEO优化
@@ -101,8 +111,8 @@ export async function generateMetadata({ params }: ArticleLayoutProps): Promise<
 
     // Schema.org 结构化数据
     other: {
-      'article:author': article.author || '',
-      'article:published_time': article.publishDate || article.savedAt,
+      'article:author': articleData.author || '',
+      'article:published_time': articleData.publishDate || articleData.savedAt || '',
       'article:section': '转载文章',
       'og:locale': 'zh_CN',
     },
