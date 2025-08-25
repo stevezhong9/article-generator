@@ -224,7 +224,7 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <header className="text-center mb-12">
           <div className="text-6xl font-bold text-gray-900 mb-6">
-            SharetoX
+            SharetoX ✨
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-blue-700 bg-clip-text text-transparent mb-4">
             一键转发助手
