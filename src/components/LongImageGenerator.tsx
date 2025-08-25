@@ -23,9 +23,14 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
   const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark' | 'gradient'>('light');
 
   const generateLongImage = async () => {
-    if (!imageRef.current) return;
+    if (!imageRef.current) {
+      alert('图片容器未找到，请刷新页面重试');
+      return;
+    }
 
     setGenerating(true);
+    console.log('开始生成长图...');
+    
     try {
       // 创建更高质量的canvas
       const canvas = await html2canvas(imageRef.current, {
@@ -37,10 +42,15 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
       });
 
       const imageDataUrl = canvas.toDataURL('image/png', 1.0);
+      console.log('长图生成成功，数据长度:', imageDataUrl.length);
       setGeneratedImage(imageDataUrl);
+      
+      // 显示成功消息
+      alert('🎉 长图生成成功！请向下滚动查看生成的图片和分享选项。');
+      
     } catch (error) {
       console.error('生成长图失败:', error);
-      alert('生成长图失败，请稍后重试');
+      alert(`生成长图失败: ${error instanceof Error ? error.message : '未知错误'}。请检查浏览器控制台获取详细信息。`);
     } finally {
       setGenerating(false);
     }
@@ -137,15 +147,34 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
         </div>
       </div>
 
-      {/* 生成按钮 */}
-      <div className="flex space-x-4">
-        <button
-          onClick={generateLongImage}
-          disabled={generating}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-        >
-          {generating ? '生成中...' : '🖼️ 生成长图'}
-        </button>
+      {/* 生成按钮和状态 */}
+      <div className="space-y-4">
+        <div className="flex space-x-4">
+          <button
+            onClick={generateLongImage}
+            disabled={generating}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          >
+            {generating ? '⏳ 生成中...' : '🖼️ 生成长图'}
+          </button>
+        </div>
+
+        {/* 状态提示 */}
+        {!generatedImage && !generating && (
+          <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <p className="text-sm text-gray-600">
+              💡 选择主题后点击&quot;生成长图&quot;按钮，生成后将显示下载和社交媒体分享选项。
+            </p>
+          </div>
+        )}
+
+        {generating && (
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              ⏳ 正在生成长图，请稍候...
+            </p>
+          </div>
+        )}
       </div>
 
       {/* 隐藏的长图模板 */}
