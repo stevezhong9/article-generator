@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import { MarketingData } from './MarketingInfo';
 
 interface ArticleRecord {
   slug: string;
@@ -9,6 +10,11 @@ interface ArticleRecord {
   content: string;
   markdown: string;
   url: string;
+  author?: string;
+  publishDate?: string;
+  description?: string;
+  sourceUrl?: string;
+  marketingData?: MarketingData | null;
   savedAt: string;
 }
 
@@ -21,6 +27,13 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark' | 'gradient'>('light');
+
+  // 调试：打印文章数据
+  console.log('LongImageGenerator - article data:', {
+    title: article.title,
+    hasMarketingData: !!article.marketingData,
+    marketingData: article.marketingData
+  });
 
   const generateLongImage = async () => {
     if (!imageRef.current) {
@@ -65,30 +78,244 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
     link.click();
   };
 
-  const shareToTwitter = () => {
+  const shareToTwitter = async () => {
     if (!generatedImage) return;
 
-    // 将图片转换为blob然后分享
-    const text = encodeURIComponent(`📄 "${article.title}" - 通过文章转载工具生成 ${window.location.origin}${article.url}`);
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${text}`;
-    window.open(twitterUrl, '_blank', 'width=600,height=400');
+    try {
+      // 生成包含文章数据的分享链接
+      const shareableURL = generateShareableURL();
+      
+      // 检查是否支持 Web Share API（移动设备）
+      if (navigator.share && navigator.canShare) {
+        // 将base64图片转换为blob
+        const response = await fetch(generatedImage);
+        const blob = await response.blob();
+        const file = new File([blob], `${article.slug}-image.png`, { type: 'image/png' });
+        
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: article.title,
+            text: `📄 "${article.title}" - 通过文章转载工具生成`,
+            url: shareableURL,
+            files: [file]
+          });
+          return;
+        }
+      }
+      
+      // 桌面端：提供多种分享选项
+      showShareOptions('twitter', shareableURL);
+      
+    } catch (error) {
+      console.error('分享失败:', error);
+      // 回退到简单文本分享
+      const text = encodeURIComponent(`📄 "${article.title}" - 通过文章转载工具生成 ${window.location.origin}${article.url}`);
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${text}`;
+      window.open(twitterUrl, '_blank', 'width=600,height=400');
+    }
   };
 
-  const shareToLinkedIn = () => {
+  const shareToLinkedIn = async () => {
     if (!generatedImage) return;
 
-    const url = encodeURIComponent(`${window.location.origin}${article.url}`);
-    const title = encodeURIComponent(article.title);
-    const summary = encodeURIComponent('通过文章转载工具生成的精美长图');
+    try {
+      const shareableURL = generateShareableURL();
+      
+      // LinkedIn 不支持直接图片分享，提供下载提示
+      showShareOptions('linkedin', shareableURL);
+      
+    } catch (error) {
+      console.error('分享失败:', error);
+      // 回退到简单链接分享
+      const url = encodeURIComponent(`${window.location.origin}${article.url}`);
+      const title = encodeURIComponent(article.title);
+      const summary = encodeURIComponent('通过文章转载工具生成的精美长图');
+      
+      const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}&summary=${summary}`;
+      window.open(linkedInUrl, '_blank', 'width=600,height=400');
+    }
+  };
+
+  // 生成包含文章数据的可分享URL
+  const generateShareableURL = () => {
+    try {
+      // 压缩文章数据
+      const shareData = {
+        title: article.title,
+        content: getCleanContent(article.content).substring(0, 1000), // 限制长度
+        savedAt: article.savedAt,
+        slug: article.slug
+      };
+      
+      // Base64编码
+      const encoded = btoa(encodeURIComponent(JSON.stringify(shareData)));
+      return `${window.location.origin}/${article.slug}?data=${encoded}`;
+    } catch (error) {
+      console.error('生成分享链接失败:', error);
+      return `${window.location.origin}${article.url}`;
+    }
+  };
+
+  // 显示分享选项对话框
+  const showShareOptions = (platform: 'twitter' | 'linkedin', url: string) => {
+    const message = platform === 'twitter' 
+      ? `🐦 Twitter/X 分享选项：\n\n1. 复制图片：右键保存上面的长图\n2. 发推文：手动上传图片并粘贴链接\n\n链接已复制到剪贴板！`
+      : `💼 LinkedIn 分享选项：\n\n1. 下载图片：点击下载按钮保存图片\n2. 发帖：在LinkedIn手动上传图片并粘贴链接\n\n链接已复制到剪贴板！`;
     
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}&summary=${summary}`;
-    window.open(linkedInUrl, '_blank', 'width=600,height=400');
+    navigator.clipboard.writeText(url);
+    alert(message);
   };
 
 
-  // 简化HTML内容，移除复杂标签
+  // 处理HTML内容并添加内联样式
+  const getStyledContent = (htmlContent: string, theme: 'light' | 'dark' | 'gradient') => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    
+    // 移除不适合长图的元素
+    const mediaElements = tempDiv.querySelectorAll('img, video, iframe, script, style');
+    mediaElements.forEach(el => el.remove());
+    
+    // 基础颜色配置
+    const colors = {
+      text: theme === 'dark' ? '#e5e7eb' : '#333333',
+      heading: theme === 'dark' ? '#ffffff' : '#1f2937',
+      link: theme === 'dark' ? '#60a5fa' : '#007AFF',
+      border: theme === 'dark' ? '#374151' : '#e5e7eb'
+    };
+    
+    // 样式化所有元素
+    const styleElement = (element: Element, styles: string) => {
+      element.setAttribute('style', styles);
+    };
+    
+    // 段落样式
+    tempDiv.querySelectorAll('p').forEach(p => {
+      styleElement(p, `
+        margin-bottom: 1.2em;
+        line-height: 1.8;
+        font-size: 18px;
+        color: ${colors.text};
+        text-align: justify;
+      `);
+    });
+    
+    // 标题样式
+    tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(h => {
+      const level = parseInt(h.tagName.charAt(1));
+      const fontSize = Math.max(24 - (level - 1) * 2, 18);
+      styleElement(h, `
+        margin-top: 1.5em;
+        margin-bottom: 0.8em;
+        font-weight: 600;
+        line-height: 1.4;
+        color: ${colors.heading};
+        font-size: ${fontSize}px;
+        ${level === 2 ? `border-left: 4px solid ${colors.link}; padding-left: 10px;` : ''}
+      `);
+    });
+    
+    // 列表样式
+    tempDiv.querySelectorAll('ul, ol').forEach(list => {
+      styleElement(list, `
+        margin: 1.2em 0;
+        padding-left: 2em;
+        color: ${colors.text};
+      `);
+    });
+    
+    tempDiv.querySelectorAll('li').forEach(li => {
+      styleElement(li, `
+        margin-bottom: 0.5em;
+        line-height: 1.7;
+        font-size: 18px;
+      `);
+    });
+    
+    // 链接样式
+    tempDiv.querySelectorAll('a').forEach(a => {
+      styleElement(a, `
+        color: ${colors.link};
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+      `);
+    });
+    
+    // 引用样式
+    tempDiv.querySelectorAll('blockquote').forEach(quote => {
+      styleElement(quote, `
+        margin: 1.5em 0;
+        padding: 1em 1.2em;
+        background: ${theme === 'dark' ? '#1f2937' : '#f8f9fa'};
+        border-left: 4px solid ${colors.link};
+        border-radius: 0 4px 4px 0;
+        font-style: italic;
+        color: ${colors.text};
+      `);
+    });
+    
+    // 代码样式
+    tempDiv.querySelectorAll('code').forEach(code => {
+      styleElement(code, `
+        background: ${theme === 'dark' ? '#374151' : '#f1f3f4'};
+        padding: 0.2em 0.4em;
+        border-radius: 3px;
+        font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+        font-size: 16px;
+      `);
+    });
+    
+    tempDiv.querySelectorAll('pre').forEach(pre => {
+      styleElement(pre, `
+        background: ${theme === 'dark' ? '#1f2937' : '#f8f9fa'};
+        padding: 1em;
+        border-radius: 6px;
+        overflow-x: auto;
+        margin: 1.5em 0;
+        border: 1px solid ${colors.border};
+      `);
+    });
+    
+    // 强调样式
+    tempDiv.querySelectorAll('strong, b').forEach(strong => {
+      styleElement(strong, `
+        font-weight: 600;
+        color: ${colors.heading};
+      `);
+    });
+    
+    tempDiv.querySelectorAll('em, i').forEach(em => {
+      styleElement(em, `
+        font-style: italic;
+        color: ${theme === 'dark' ? '#9ca3af' : '#7f8c8d'};
+      `);
+    });
+    
+    // 分割线样式
+    tempDiv.querySelectorAll('hr').forEach(hr => {
+      styleElement(hr, `
+        margin: 2em 0;
+        border: none;
+        height: 1px;
+        background: linear-gradient(to right, transparent, ${colors.border}, transparent);
+      `);
+    });
+    
+    // 设置整个容器的基础样式
+    tempDiv.setAttribute('style', `
+      font-size: 18px;
+      line-height: 1.8;
+      color: ${colors.text};
+      max-height: 800px;
+      overflow: hidden;
+      position: relative;
+    `);
+    
+    return tempDiv.innerHTML;
+  };
+
+  // 简化HTML内容，移除复杂标签（保留用于分享URL）
   const getCleanContent = (htmlContent: string) => {
-    // 提取纯文本内容，保留基本格式
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = htmlContent;
     
@@ -180,6 +407,43 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
             boxShadow: selectedTheme === 'gradient' ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
           }}
         >
+          {/* 顶部品牌Logo区域 */}
+          {article.marketingData?.logo && (
+            <div 
+              style={{
+                textAlign: 'center',
+                marginBottom: '32px',
+                paddingBottom: '24px',
+                borderBottom: '1px solid',
+                borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb'
+              }}
+            >
+              <img 
+                src={article.marketingData.logo} 
+                alt="Brand Logo"
+                style={{
+                  height: '60px',
+                  maxWidth: '200px',
+                  objectFit: 'contain',
+                  marginBottom: article.marketingData.companyName ? '12px' : '0',
+                  display: 'block',
+                  margin: '0 auto ' + (article.marketingData.companyName ? '12px' : '0') + ' auto'
+                }}
+              />
+              {article.marketingData.companyName && (
+                <div 
+                  style={{
+                    fontSize: '16px',
+                    color: selectedTheme === 'dark' ? '#9ca3af' : '#6b7280',
+                    fontWeight: '500'
+                  }}
+                >
+                  {article.marketingData.companyName}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* 标题部分 */}
           <div 
             style={{
@@ -213,32 +477,144 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
             >
               <span>📅 {new Date(article.savedAt).toLocaleDateString('zh-CN')}</span>
               <span>•</span>
-              <span>📄 文章转载工具</span>
+              <span>📄 {article.marketingData?.companyName || '文章转载工具'}</span>
             </div>
           </div>
 
-          {/* 内容部分 */}
+          {/* 内容部分 - 使用HTML内容并应用样式 */}
           <div 
-            style={{
-              fontSize: '18px',
-              lineHeight: '1.6'
+            dangerouslySetInnerHTML={{ 
+              __html: getStyledContent(article.content, selectedTheme) 
             }}
-          >
-            {getCleanContent(article.content)
-              .split('\n\n')
-              .slice(0, 15) // 限制段落数量
-              .map((paragraph, index) => (
-                <p 
-                  key={index} 
+          />
+
+          {/* 转载来源 */}
+          {article.sourceUrl && (
+            <div 
+              style={{
+                marginTop: '32px',
+                paddingTop: '24px',
+                borderTop: '1px solid',
+                borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb',
+                textAlign: 'center'
+              }}
+            >
+              <div 
+                style={{
+                  backgroundColor: selectedTheme === 'dark' ? '#1f2937' : '#f9fafb',
+                  padding: '16px',
+                  borderRadius: '8px',
+                  border: '1px solid',
+                  borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb'
+                }}
+              >
+                <h4 
                   style={{
-                    marginBottom: '16px',
-                    color: selectedTheme === 'dark' ? '#e5e7eb' : '#374151'
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    marginBottom: '8px',
+                    color: selectedTheme === 'dark' ? '#d1d5db' : '#374151'
                   }}
                 >
-                  {paragraph.trim()}
+                  📄 转载来源
+                </h4>
+                <p 
+                  style={{
+                    fontSize: '12px',
+                    marginBottom: '8px',
+                    color: selectedTheme === 'dark' ? '#9ca3af' : '#6b7280'
+                  }}
+                >
+                  本文转载自原作者，版权归原作者所有
                 </p>
-              ))}
-          </div>
+                <div style={{ fontSize: '12px' }}>
+                  <span style={{ color: selectedTheme === 'dark' ? '#9ca3af' : '#6b7280' }}>
+                    原文链接: 
+                  </span>
+                  <span 
+                    style={{ 
+                      color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF',
+                      wordBreak: 'break-all'
+                    }}
+                  >
+                    {article.sourceUrl}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 联系方式区域 */}
+          {article.marketingData && (
+            <div 
+              style={{
+                marginTop: '32px',
+                paddingTop: '24px',
+                borderTop: '1px solid',
+                borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb',
+                textAlign: 'center'
+              }}
+            >
+              <h3 
+                style={{
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  marginBottom: '16px',
+                  color: selectedTheme === 'dark' ? '#ffffff' : '#1f2937'
+                }}
+              >
+                联系我们
+              </h3>
+              
+              <div 
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  fontSize: '14px',
+                  color: selectedTheme === 'dark' ? '#d1d5db' : '#4b5563'
+                }}
+              >
+                {article.marketingData.website && (
+                  <div>
+                    <span style={{ fontWeight: '500' }}>官网: </span>
+                    <span style={{ color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF' }}>
+                      {article.marketingData.website}
+                    </span>
+                  </div>
+                )}
+                
+                {(article.marketingData.email || article.marketingData.phone) && (
+                  <div 
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      gap: '24px',
+                      marginTop: '8px'
+                    }}
+                  >
+                    {article.marketingData.email && (
+                      <div>
+                        <span style={{ fontWeight: '500' }}>邮箱: </span>
+                        <span style={{ color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF' }}>
+                          {article.marketingData.email}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {article.marketingData.phone && (
+                      <div>
+                        <span style={{ fontWeight: '500' }}>电话: </span>
+                        <span style={{ color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF' }}>
+                          {article.marketingData.phone}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* 底部标识 */}
           <div 
@@ -248,11 +624,11 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
               borderTop: '1px solid',
               borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb',
               textAlign: 'center',
-              fontSize: '14px',
-              opacity: 0.6
+              fontSize: '12px',
+              opacity: 0.5
             }}
           >
-            <p>由文章转载工具生成 • {window.location.origin}</p>
+            <p>由{article.marketingData?.companyName || '文章转载工具'}生成 • {typeof window !== 'undefined' ? window.location.origin : ''}</p>
           </div>
         </div>
       </div>

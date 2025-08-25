@@ -3,7 +3,7 @@ import { scrapeArticle } from '@/lib/scraper';
 
 export async function POST(request: NextRequest) {
   try {
-    const { url, customPath } = await request.json();
+    const { url, marketingData } = await request.json();
 
     if (!url) {
       return NextResponse.json(
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const articleData = await scrapeArticle(url, customPath);
+    const articleData = await scrapeArticle(url);
     
     // 添加详细的调试日志
     console.log('=== SCRAPE API DEBUG ===');
@@ -44,7 +44,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: articleData
+      data: {
+        ...articleData,
+        marketingData: marketingData || null
+      }
     });
 
   } catch (error) {

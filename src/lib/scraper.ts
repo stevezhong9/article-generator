@@ -2,6 +2,14 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import slugify from 'slugify';
 
+export interface MarketingData {
+  logo?: string;
+  companyName?: string;
+  website?: string;
+  email?: string;
+  phone?: string;
+}
+
 export interface ArticleData {
   title: string;
   content: string;
@@ -10,9 +18,10 @@ export interface ArticleData {
   description?: string;
   url: string;
   slug: string;
+  marketingData?: MarketingData | null;
 }
 
-export async function scrapeArticle(url: string, customPath?: string): Promise<ArticleData> {
+export async function scrapeArticle(url: string): Promise<ArticleData> {
   try {
     console.log('=== SCRAPER DEBUG ===');
     console.log('开始抓取URL:', url);
@@ -44,7 +53,7 @@ export async function scrapeArticle(url: string, customPath?: string): Promise<A
     const description = extractDescription($);
     console.log('提取的描述:', description ? `存在 (长度: ${description.length})` : '未找到');
 
-    const slug = customPath || generateSlug(title);
+    const slug = generateSlug(title);
     console.log('生成的slug:', slug ? `"${slug}"` : '生成失败');
 
     // 验证必需字段，提供备用值
