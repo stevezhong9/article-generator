@@ -119,7 +119,14 @@ document.getElementById('closeBtnBookmarklet').onclick=function(){p.remove();};
 function saveAndShare(){
 console.log('正在保存文章到SharetoX...');
 var content=document.body.innerHTML.substring(0,5000);
-var slug=t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,50);
+var slug=t.toLowerCase().replace(/[^\w\u4e00-\u9fff]+/g,'-').replace(/^-+|-+$/g,'').substring(0,50);
+if(!slug||slug.length<3){
+var urlParts=u.split('/');
+var pathSlug=urlParts[urlParts.length-1]||urlParts[urlParts.length-2]||'';
+pathSlug=pathSlug.replace(/\.(html|htm|php|jsp|asp)$/i,'').replace(/[^\w-]/g,'').substring(0,30);
+slug=pathSlug||('article-'+Date.now().toString(36));
+}
+console.log('生成的slug:',slug);
 fetch('https://sharetox.com/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u,title:t,content:'<p>'+desc+'</p><div>'+content+'</div>',slug:slug,description:desc})}).then(function(r){return r.json();}).then(function(data){
 console.log('保存结果:',data);
 if(data.success){
