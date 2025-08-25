@@ -308,40 +308,49 @@ export default function Home() {
                 <div className="text-center">
                   <h2 className="text-lg font-semibold text-gray-800 mb-3">🔖 一键转发书签</h2>
                   <p className="text-sm text-gray-600 mb-4">
-                    拖拽下方按钮到浏览器书签栏，在任何网页上都能一键转发文章到社交媒体
+                    拖拽下方按钮到浏览器书签栏，或点击复制代码手动添加。在任何网页上都能一键转发文章到社交媒体
                   </p>
                   
                   
                   <div className="flex justify-center mb-4">
-                    <button
-                      onClick={() => {
+                    <a
+                      ref={(el) => {
+                        if (el) el.href = bookmarkletCode;
+                      }}
+                      className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg shadow hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 cursor-move text-sm select-none"
+                      draggable="true"
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', bookmarkletCode);
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
                         // 创建bookmarklet链接并复制到剪贴板
                         navigator.clipboard.writeText(bookmarkletCode).then(() => {
-                          alert('书签代码已复制到剪贴板！\n\n请按以下步骤操作：\n1. 在浏览器中添加新书签\n2. 将剪贴板内容粘贴为书签地址\n3. 保存书签\n4. 在任意网页点击书签即可使用');
+                          alert('书签代码已复制到剪贴板！\n\n请按以下步骤操作：\n1. 在浏览器中添加新书签\n2. 将剪贴板内容粘贴为书签地址\n3. 保存书签\n\n💡 提示：您也可以直接拖拽此按钮到浏览器书签栏！');
                         });
                       }}
-                      className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg shadow hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 cursor-pointer text-sm"
+                      title="拖拽到书签栏或点击复制代码"
                     >
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
                       </svg>
                       🔖 一键转发
-                    </button>
+                    </a>
                   </div>
                   
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                     <div className="text-xs text-gray-700 space-y-1">
                       <div className="flex items-start">
-                        <span className="font-medium mr-1">1.</span>
-                        <span>拖拽按钮到书签栏</span>
+                        <span className="font-medium mr-1">方式1:</span>
+                        <span>直接拖拽按钮到浏览器书签栏</span>
                       </div>
                       <div className="flex items-start">
-                        <span className="font-medium mr-1">2.</span>
-                        <span>在文章页面点击书签</span>
+                        <span className="font-medium mr-1">方式2:</span>
+                        <span>点击按钮复制代码，手动添加书签</span>
                       </div>
                       <div className="flex items-start">
-                        <span className="font-medium mr-1">3.</span>
-                        <span>选择平台一键分享</span>
+                        <span className="font-medium mr-1">使用:</span>
+                        <span>在任意网页点击书签即可转发</span>
                       </div>
                     </div>
                   </div>
