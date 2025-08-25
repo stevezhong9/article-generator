@@ -66,30 +66,9 @@ export default function Home() {
       const result = await response.json();
 
       if (result.success) {
-        // 将文章数据保存到本地存储
-        const articleRecord = {
-          slug: result.data.slug,
-          title: result.data.title,
-          content: result.data.content,
-          markdown: result.data.markdown,
-          url: result.data.url,
-          savedAt: new Date().toISOString()
-        };
-
-        // 获取现有的文章列表
-        const existingArticles = JSON.parse(localStorage.getItem('saved-articles') || '[]');
-        
-        // 添加新文章
-        existingArticles.push(articleRecord);
-        
-        // 保存回本地存储
-        localStorage.setItem('saved-articles', JSON.stringify(existingArticles));
-        
-        // 保存单独的文章内容（用于文章页面访问）
-        localStorage.setItem(`article-${result.data.slug}`, JSON.stringify(articleRecord));
-
+        // 文章已保存到服务器，直接使用返回的URL
         setSaved({
-          path: `localStorage: article-${result.data.slug}`,
+          path: `服务端存储`,
           url: result.data.url
         });
         setArticle(null);
