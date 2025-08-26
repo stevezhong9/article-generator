@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     
     console.log('=== SAVE API DEBUG ===');
     console.log('收到的完整数据:', JSON.stringify(fullArticleData, null, 2));
+    console.log('营销数据:', JSON.stringify(marketingData, null, 2));
     
     // 检查必需字段
     const missingFields = [];
