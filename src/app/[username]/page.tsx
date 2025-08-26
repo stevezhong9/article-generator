@@ -55,31 +55,6 @@ export default function UserPage({ params }: UserPageProps) {
     loadParams();
   }, [params]);
 
-  const loadUserData = async () => {
-    try {
-      // 获取用户信息
-      const profileResponse = await fetch(`/api/user/${username}`);
-      const profileResult = await profileResponse.json();
-
-      if (profileResult.success) {
-        setUserProfile(profileResult.data.profile);
-        setArticles(profileResult.data.articles);
-        
-        // 检查是否是当前用户的页面
-        setIsOwner(session?.user?.username === username);
-      } else {
-        setUserProfile(null);
-        setArticles([]);
-      }
-    } catch (error) {
-      console.error('加载用户数据失败:', error);
-      setUserProfile(null);
-      setArticles([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex items-center justify-center">
@@ -90,6 +65,23 @@ export default function UserPage({ params }: UserPageProps) {
       </div>
     );
   }
+
+  const loadUserData = async () => {
+    try {
+      // 获取用户信息
+      const profileResponse = await fetch(`/api/user/${username}`);
+      const profileResult = await profileResponse.json();
+
+      if (profileResult.success) {
+        setUserProfile(profileResult.data.user);
+        setArticles(profileResult.data.articles);
+      }
+    } catch (error) {
+      console.error('加载用户数据失败:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!username) return;
