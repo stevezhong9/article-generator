@@ -86,10 +86,16 @@ export default function ArticlePage({ params }: ArticlePageProps) {
             content: articleData.content,
             markdown: articleData.markdown,
             url: articleData.url,
-            savedAt: articleData.savedAt
+            savedAt: articleData.savedAt,
+            author: articleData.author,
+            publishDate: articleData.publishDate,
+            description: articleData.description,
+            sourceUrl: articleData.sourceUrl,
+            marketingData: articleData.marketingData
           };
           
           console.log('从API获取文章成功:', articleRecord.title);
+          console.log('营销数据:', articleRecord.marketingData);
           setArticle(articleRecord);
           
           // 缓存到localStorage
@@ -127,7 +133,12 @@ export default function ArticlePage({ params }: ArticlePageProps) {
             content: articleData.content,
             markdown: articleData.content,
             url: `/${slug}`,
-            savedAt: articleData.savedAt || new Date().toISOString()
+            savedAt: articleData.savedAt || new Date().toISOString(),
+            author: articleData.author,
+            publishDate: articleData.publishDate,
+            description: articleData.description,
+            sourceUrl: articleData.sourceUrl,
+            marketingData: articleData.marketingData
           };
           
           console.log('URL参数解码成功:', articleRecord.title);
@@ -160,6 +171,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
         if (articleData) {
           const parsedArticle = JSON.parse(articleData) as ArticleRecord;
           console.log('✅ 从localStorage读取文章成功:', parsedArticle.title);
+          console.log('✅ localStorage营销数据:', parsedArticle.marketingData);
           setArticle(parsedArticle);
         } else {
           console.log('❌ 文章未找到:', slug);
@@ -177,6 +189,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
             if (fuzzyData) {
               const parsedArticle = JSON.parse(fuzzyData) as ArticleRecord;
               console.log('✅ 模糊匹配成功:', parsedArticle.title);
+              console.log('✅ 模糊匹配营销数据:', parsedArticle.marketingData);
               setArticle(parsedArticle);
               return;
             }
@@ -346,6 +359,17 @@ export default function ArticlePage({ params }: ArticlePageProps) {
       </div>
     );
   }
+
+  // 调试日志
+  console.log('文章页面渲染 - 文章数据:', {
+    title: article?.title,
+    hasMarketingData: !!article?.marketingData,
+    marketingData: article?.marketingData,
+    logo: article?.marketingData?.logo,
+    companyName: article?.marketingData?.companyName,
+    website: article?.marketingData?.website,
+    email: article?.marketingData?.email
+  });
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
