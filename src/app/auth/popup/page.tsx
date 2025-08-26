@@ -13,33 +13,62 @@ function AuthPopupContent() {
     const callbackUrl = searchParams.get('callbackUrl') || '/';
     const errorParam = searchParams.get('error');
 
+    // 如果有错误参数，直接处理
     if (errorParam) {
-      setError(decodeURIComponent(errorParam));
+      const errorMessage = decodeURIComponent(errorParam);
+      setError(errorMessage);
+      
       // 通知父窗口登录失败
-      if (window.opener) {
-        window.opener.postMessage({
-          type: 'AUTH_ERROR',
-          error: decodeURIComponent(errorParam)
-        }, window.location.origin);
-        window.close();
+      if (window.opener && !window.opener.closed) {
+        try {
+          window.opener.postMessage({
+            type: 'AUTH_ERROR',
+            error: errorMessage
+          }, window.location.origin);
+          setTimeout(() => window.close(), 1000);
+        } catch (e) {
+          console.error('Cannot communicate with parent window:', e);
+        }
       }
       return;
     }
 
-    if (status === 'authenticated' && session) {
-      // 登录成功，通知父窗口
-      if (window.opener) {
-        window.opener.postMessage({
-          type: 'AUTH_SUCCESS',
-          user: session.user,
-          callbackUrl
-        }, window.location.origin);
-        window.close();
+    // 处理成功登录
+    if (status === 'authenticated' && session?.user) {
+      console.log('Authentication successful in popup');
+      
+      // 通知父窗口登录成功
+      if (window.opener && !window.opener.closed) {
+        try {
+          window.opener.postMessage({
+            type: 'AUTH_SUCCESS',
+            user: session.user,
+            callbackUrl
+          }, window.location.origin);
+          
+          // 延迟关闭窗口，确保消息被处理
+          setTimeout(() => window.close(), 500);
+        } catch (e) {
+          console.error('Cannot communicate with parent window:', e);
+          // 如果无法通信，直接跳转
+          window.location.href = callbackUrl;
+        }
       } else {
-        // 如果没有父窗口，直接跳转
+        // 如果没有父窗口或父窗口已关闭，直接跳转
         window.location.href = callbackUrl;
       }
     }
+    
+    // 处理加载状态超时
+    if (status === 'loading') {
+      const timeout = setTimeout(() => {
+        console.log('Authentication timeout in popup');
+        setError('登录超时，请重试');
+      }, 10000); // 10秒超时
+      
+      return () => clearTimeout(timeout);
+    }
+    
   }, [session, status, searchParams]);
 
   if (status === 'loading') {

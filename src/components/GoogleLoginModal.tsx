@@ -34,44 +34,86 @@ export default function GoogleLoginModal({
     setIsLoading(true);
     
     try {
-      const result = await signIn('google', { 
-        redirect: false,
-        callbackUrl 
-      });
-
-      if (result?.error) {
-        throw new Error(result.error);
-      }
-
-      if (!result?.ok) {
-        throw new Error('登录失败，请重试');
-      }
-
-      // 等待 session 更新
-      const maxAttempts = 20; // 10秒最多重试20次
-      let attempts = 0;
+      // 检查是否为移动设备
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
-      const checkSession = () => {
-        attempts++;
-        if (status === 'authenticated') {
-          setIsLoading(false);
-          onSuccess?.();
-          onClose();
-        } else if (attempts < maxAttempts) {
-          setTimeout(checkSession, 500);
-        } else {
-          setIsLoading(false);
-          onError?.('登录状态更新超时，请刷新页面重试');
-        }
-      };
+      if (isMobile) {
+        // 移动设备直接跳转
+        await signIn('google', { callbackUrl });
+        return;
+      }
 
-      setTimeout(checkSession, 500);
+      // 桌面设备使用弹窗
+      const popup = await openGoogleLoginPopup();
+      
+      if (popup) {
+        // 监听弹窗关闭
+        const checkClosed = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(checkClosed);
+            setIsLoading(false);
+            
+            // 检查登录状态
+            setTimeout(() => {
+              if (status === 'authenticated') {
+                onSuccess?.();
+                onClose();
+              } else {
+                onError?.('登录已取消或失败');
+              }
+            }, 1000);
+          }
+        }, 1000);
+
+        // 监听来自弹窗的消息
+        const messageHandler = (event: MessageEvent) => {
+          if (event.origin !== window.location.origin) return;
+          
+          if (event.data.type === 'AUTH_SUCCESS') {
+            popup.close();
+            window.removeEventListener('message', messageHandler);
+            clearInterval(checkClosed);
+            setIsLoading(false);
+            onSuccess?.();
+            onClose();
+          } else if (event.data.type === 'AUTH_ERROR') {
+            popup.close();
+            window.removeEventListener('message', messageHandler);
+            clearInterval(checkClosed);
+            setIsLoading(false);
+            onError?.(event.data.error || '登录失败');
+          }
+        };
+
+        window.addEventListener('message', messageHandler);
+      } else {
+        throw new Error('弹窗被阻止，请允许弹窗并重试');
+      }
 
     } catch (error) {
       console.error('登录失败:', error);
       setIsLoading(false);
       onError?.(error instanceof Error ? error.message : '登录失败，请重试');
     }
+  };
+
+  const openGoogleLoginPopup = (): Promise<Window | null> => {
+    return new Promise((resolve) => {
+      // 弹窗尺寸和位置
+      const width = 500;
+      const height = 600;
+      const left = window.screenX + (window.outerWidth - width) / 2;
+      const top = window.screenY + (window.outerHeight - height) / 2;
+      
+      const features = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
+      
+      // 构建登录 URL
+      const baseUrl = window.location.origin;
+      const loginUrl = `${baseUrl}/api/auth/signin/google?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+      
+      const popup = window.open(loginUrl, 'google-oauth', features);
+      resolve(popup);
+    });
   };
 
   if (!isOpen) return null;

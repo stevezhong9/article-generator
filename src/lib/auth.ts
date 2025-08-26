@@ -60,27 +60,39 @@ export const authOptions: NextAuthOptions = {
       return true
     },
     async redirect({ url, baseUrl }) {
-      // 如果是弹窗登录，重定向到弹窗处理页面
-      if (url.includes('popup=true')) {
-        return `${baseUrl}/auth/popup?${new URL(url).searchParams}`;
-      }
+      console.log('NextAuth redirect called with:', { url, baseUrl });
       
-      // 如果url是相对路径，使用baseUrl
-      if (url.startsWith('/')) {
-        return `${baseUrl}${url}`;
-      }
-      
-      // 如果url是同源的，直接返回
       try {
-        if (new URL(url).origin === baseUrl) {
+        const urlObj = new URL(url, baseUrl);
+        const callbackUrl = urlObj.searchParams.get('callbackUrl') || '/';
+        
+        // 检查是否来自弹窗（通过 referrer 或特定参数判断）
+        const isPopupLogin = url.includes('/api/auth/signin/google') || 
+                           url.includes('popup') ||
+                           (typeof window !== 'undefined' && window.opener);
+        
+        if (isPopupLogin) {
+          // 弹窗登录成功，重定向到弹窗处理页面
+          return `${baseUrl}/auth/popup?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+        }
+        
+        // 如果url是相对路径，使用baseUrl
+        if (url.startsWith('/')) {
+          return `${baseUrl}${url}`;
+        }
+        
+        // 如果url是同源的，直接返回
+        if (urlObj.origin === baseUrl) {
           return url;
         }
-      } catch {
-        // URL格式错误时返回baseUrl
+        
+        // 否则返回baseUrl
+        return baseUrl;
+        
+      } catch (error) {
+        console.error('Redirect error:', error);
+        return baseUrl;
       }
-      
-      // 否则返回baseUrl
-      return baseUrl;
     }
   },
   // 移除自定义页面配置，使用 NextAuth 默认页面
