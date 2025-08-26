@@ -92,9 +92,9 @@ export default function PricingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-brand-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">加载中...</p>
         </div>
       </div>
@@ -105,25 +105,25 @@ export default function PricingPage() {
   const paidPlans = plans.filter(p => p.price_usd > 0).sort((a, b) => a.price_usd - b.price_usd);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-brand-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* 头部 */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-share rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
               </svg>
             </div>
-            <h1 className="text-4xl font-bold text-neutral-900 mb-0">ShareX AI 订阅套餐</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-0">ShareX AI 订阅套餐</h1>
           </div>
-          <p className="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             选择最适合您的AI超级分享平台套餐，解锁无限制的智能内容分享功能
           </p>
           
           {/* 用户状态显示 */}
           {userStatus && (
-            <div className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-primary text-white text-sm font-medium shadow-brand-blue">
+            <div className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium shadow-lg">
               {userStatus.isVip ? (
                 <span className="flex items-center">
                   <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -144,13 +144,13 @@ export default function PricingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {/* 免费版 */}
           {freePlan && (
-            <div className="card-brand p-8 relative hover:shadow-large transition-all duration-300">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 relative hover:shadow-lg transition-all duration-300">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-neutral-900 mb-2">{freePlan.name}</h3>
-                <div className="text-4xl font-bold bg-gradient-to-r from-neutral-600 to-neutral-800 bg-clip-text text-transparent mb-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{freePlan.name}</h3>
+                <div className="text-4xl font-bold bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent mb-2">
                   免费
                 </div>
-                <p className="text-neutral-600">{freePlan.description}</p>
+                <p className="text-gray-600">{freePlan.description}</p>
               </div>
               
               <ul className="space-y-4 mb-8">
@@ -176,7 +176,7 @@ export default function PricingPage() {
               
               <button
                 disabled
-                className="w-full py-3 px-4 rounded-lg bg-neutral-100 text-neutral-500 font-medium cursor-not-allowed"
+                className="w-full py-3 px-4 rounded-lg bg-gray-100 text-gray-500 font-medium cursor-not-allowed"
               >
                 当前方案
               </button>
@@ -187,24 +187,31 @@ export default function PricingPage() {
           {paidPlans.map((plan) => (
             <div 
               key={plan.id}
-              className={`card-brand p-8 relative transition-all duration-300 ${
+              className={`bg-white rounded-xl shadow-sm border p-8 relative transition-all duration-300 ${
                 plan.duration_months === 12 
-                  ? 'pricing-card-popular' 
-                  : 'hover:shadow-large'
+                  ? 'border-orange-500 transform scale-105 shadow-lg relative' 
+                  : 'border-gray-200 hover:shadow-lg'
               }`}
             >
+              {plan.duration_months === 12 && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-full text-xs font-semibold">
+                    Most Popular
+                  </span>
+                </div>
+              )}
               
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-neutral-900 mb-2">{plan.name}</h3>
-                <div className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
                   ${plan.price_usd}
-                  <span className="text-lg text-neutral-600 font-normal">
+                  <span className="text-lg text-gray-600 font-normal">
                     /{plan.duration_months === 1 ? '月' : '年'}
                   </span>
                 </div>
-                <p className="text-neutral-600">{plan.description}</p>
+                <p className="text-gray-600">{plan.description}</p>
                 {plan.duration_months === 12 && (
-                  <p className="text-sm text-success mt-2 font-medium">
+                  <p className="text-sm text-green-600 mt-2 font-medium">
                     节省 $18 (相当于月付$7.5)
                   </p>
                 )}
@@ -242,10 +249,10 @@ export default function PricingPage() {
                 disabled={checkoutLoading === plan.id || userStatus?.isVip}
                 className={`w-full py-4 px-6 rounded-lg font-semibold transition-all duration-300 ${
                   userStatus?.isVip
-                    ? 'bg-neutral-100 text-neutral-500 cursor-not-allowed'
+                    ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                     : plan.duration_months === 12
-                    ? 'btn-brand-primary transform hover:scale-105'
-                    : 'btn-brand-secondary transform hover:scale-105'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 shadow-lg'
+                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 transform hover:scale-105 shadow-lg'
                 } ${checkoutLoading === plan.id ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {checkoutLoading === plan.id ? (
@@ -270,43 +277,43 @@ export default function PricingPage() {
 
         {/* 底部说明 */}
         <div className="text-center">
-          <div className="card-brand p-8">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-8 h-8 bg-gradient-accent rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900">常见问题</h3>
+              <h3 className="text-xl font-semibold text-gray-900">常见问题</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
               <div>
-                <h4 className="font-semibold text-neutral-900 mb-2 flex items-center">
-                  <div className="w-2 h-2 bg-brand-blue rounded-full mr-2"></div>
+                <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-2"></div>
                   支付安全吗？
                 </h4>
-                <p className="text-neutral-600 text-sm leading-relaxed">我们使用国际领先的Stripe支付系统，银行级加密保护您的支付信息。</p>
+                <p className="text-gray-600 text-sm leading-relaxed">我们使用国际领先的Stripe支付系统，银行级加密保护您的支付信息。</p>
               </div>
               <div>
-                <h4 className="font-semibold text-neutral-900 mb-2 flex items-center">
-                  <div className="w-2 h-2 bg-brand-orange rounded-full mr-2"></div>
+                <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
                   可以随时取消吗？
                 </h4>
-                <p className="text-neutral-600 text-sm leading-relaxed">当然可以！您可以随时在个人设置中取消订阅，无任何违约金。</p>
+                <p className="text-gray-600 text-sm leading-relaxed">当然可以！您可以随时在个人设置中取消订阅，无任何违约金。</p>
               </div>
               <div>
-                <h4 className="font-semibold text-neutral-900 mb-2 flex items-center">
-                  <div className="w-2 h-2 bg-success rounded-full mr-2"></div>
+                <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                   年付有优惠吗？
                 </h4>
-                <p className="text-neutral-600 text-sm leading-relaxed">年付方案可节省20%费用，相当于免费获得2个月的VIP服务。</p>
+                <p className="text-gray-600 text-sm leading-relaxed">年付方案可节省20%费用，相当于免费获得2个月的VIP服务。</p>
               </div>
               <div>
-                <h4 className="font-semibold text-neutral-900 mb-2 flex items-center">
-                  <div className="w-2 h-2 bg-brand-blue rounded-full mr-2"></div>
+                <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-2"></div>
                   升级后立即生效吗？
                 </h4>
-                <p className="text-neutral-600 text-sm leading-relaxed">支付完成后即时生效，立即解锁所有VIP功能和无限制使用权限。</p>
+                <p className="text-gray-600 text-sm leading-relaxed">支付完成后即时生效，立即解锁所有VIP功能和无限制使用权限。</p>
               </div>
             </div>
           </div>
@@ -316,7 +323,7 @@ export default function PricingPage() {
         <div className="text-center mt-8">
           <Link
             href="/"
-            className="nav-brand-link inline-flex items-center px-4 py-2 text-sm font-medium transition-all duration-300"
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
           >
             ← 返回首页
           </Link>

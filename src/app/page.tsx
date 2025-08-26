@@ -11,12 +11,12 @@ export default function Home() {
   const { data: session, status } = useSession();
   const [showLoadingFallback, setShowLoadingFallback] = useState(false);
 
-  // 如果超过3秒还在加载，显示内容而不是无限loading
+  // 如果超过1.5秒还在加载，显示内容而不是无限loading  
   useEffect(() => {
     if (status === 'loading') {
       const timer = setTimeout(() => {
         setShowLoadingFallback(true);
-      }, 3000);
+      }, 1500); // 减少到1.5秒
       return () => clearTimeout(timer);
     }
   }, [status]);
