@@ -12,8 +12,12 @@ export default function DMCAPolicyPage() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <a href="/" className="text-xl font-bold text-blue-600">
-              {t('footer.company')}
+            <a href="/" className="flex items-center space-x-2">
+              <img 
+                src="/logo.png" 
+                alt="ShareX AI Logo" 
+                className="h-8 w-auto"
+              />
             </a>
             <LanguageSwitcher />
           </div>

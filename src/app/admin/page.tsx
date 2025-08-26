@@ -74,12 +74,12 @@ export default function AdminDashboard() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-share rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
-                  </svg>
-                </div>
-                <h1 className="text-xl font-semibold bg-gradient-primary bg-clip-text text-transparent">ShareX AI 管理后台</h1>
+                <img 
+                  src="/logo.png" 
+                  alt="ShareX AI Logo" 
+                  className="h-8 w-auto"
+                />
+                <h1 className="text-xl font-semibold bg-gradient-primary bg-clip-text text-transparent">管理后台</h1>
               </div>
             </div>
             <div className="flex items-center space-x-4">

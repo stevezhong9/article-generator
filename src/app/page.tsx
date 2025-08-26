@@ -235,18 +235,17 @@ export default function Home() {
             </div>
           )}
           
-          <div className="flex items-center justify-center space-x-4 mb-6">
-            <div className="w-16 h-16 bg-gradient-share rounded-2xl flex items-center justify-center shadow-brand-blue">
-              <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8 12V8l4-4 4 4-4 4v4l-4-4z"/>
-                <path d="M4 8v4l4 4V8L4 8z"/>
-              </svg>
+          <div className="flex flex-col items-center justify-center mb-8">
+            <div className="mb-4 transform hover:scale-105 transition-transform duration-300">
+              <img 
+                src="/logo.png" 
+                alt="ShareX AI - AI超级分享平台" 
+                className="h-24 w-auto drop-shadow-2xl"
+              />
             </div>
-            <div>
-              <div className="text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-                ShareX AI
-              </div>
-              <div className="text-sm text-neutral-600 font-medium">AI超级分享平台</div>
+            <div className="text-center">
+              <div className="text-lg text-neutral-600 font-medium mb-1">AI超级分享平台</div>
+              <div className="text-sm text-neutral-500">Powered by ShareX AI Technology</div>
             </div>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-neutral-900 via-brand-blue to-brand-orange bg-clip-text text-transparent mb-4">
