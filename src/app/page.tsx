@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import ArticleForm from '@/components/ArticleForm';
 import ArticlePreview from '@/components/ArticlePreview';
 import ArticleShareModal from '@/components/ArticleShareModal';
 import { ArticleData } from '@/lib/scraper';
 import { MarketingData } from '@/components/MarketingInfo';
+import SearchParamsHandler from '@/components/SearchParamsHandler';
 
 export default function Home() {
   const [article, setArticle] = useState<ArticleData | null>(null);
@@ -18,49 +18,22 @@ export default function Home() {
   const [showClipboardPrompt, setShowClipboardPrompt] = useState(false);
   const [urlParamUrl, setUrlParamUrl] = useState<string>('');
   const [initialMarketingData, setInitialMarketingData] = useState<MarketingData>({});
-  
-  const searchParams = useSearchParams();
 
-  // 处理URL参数
-  useEffect(() => {
-    if (searchParams) {
-      // 检查URL参数中的文章URL
-      const paramUrl = searchParams.get('url');
-      if (paramUrl) {
-        setUrlParamUrl(paramUrl);
-        // 如果有URL参数，不显示剪贴板提示
-        setShowClipboardPrompt(false);
-        setClipboardUrl('');
-      }
+  // 处理URL参数的回调函数
+  const handleUrlParam = (url: string) => {
+    setUrlParamUrl(url);
+    // 如果有URL参数，不显示剪贴板提示
+    setShowClipboardPrompt(false);
+    setClipboardUrl('');
+  };
 
-      // 检查营销数据参数
-      const marketingData: MarketingData = {};
-      const companyName = searchParams.get('company') || searchParams.get('companyName');
-      const website = searchParams.get('website') || searchParams.get('site');
-      const email = searchParams.get('email') || searchParams.get('contact');
-      const phone = searchParams.get('phone') || searchParams.get('tel');
-      const logo = searchParams.get('logo');
+  const handleMarketingDataParam = (marketingData: MarketingData) => {
+    setInitialMarketingData(marketingData);
+  };
 
-      if (companyName) marketingData.companyName = companyName;
-      if (website) marketingData.website = website;
-      if (email) marketingData.email = email;
-      if (phone) marketingData.phone = phone;
-      if (logo) marketingData.logo = logo;
-
-      if (Object.keys(marketingData).length > 0) {
-        setInitialMarketingData(marketingData);
-      }
-
-      // 如果有URL参数且所有必要信息都有，可以自动开始处理
-      const autoStart = searchParams.get('auto') === 'true';
-      if (paramUrl && autoStart) {
-        // 延迟一点时间让组件完全初始化
-        setTimeout(() => {
-          handleScrape(paramUrl, marketingData);
-        }, 1000);
-      }
-    }
-  }, [searchParams]);
+  const handleAutoStart = (url: string, marketingData: MarketingData) => {
+    handleScrape(url, marketingData);
+  };
 
   // 检测剪贴板URL
   useEffect(() => {
@@ -374,6 +347,15 @@ alert('一键转发工具加载失败: '+err.message);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 py-8">
+      {/* URL参数处理组件 */}
+      <Suspense fallback={null}>
+        <SearchParamsHandler
+          onUrlParam={handleUrlParam}
+          onMarketingData={handleMarketingDataParam}
+          onAutoStart={handleAutoStart}
+        />
+      </Suspense>
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <header className="text-center mb-12">
           <div className="text-6xl font-bold text-gray-900 mb-6">
