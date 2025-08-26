@@ -17,11 +17,23 @@ NEXTAUTH_URL=http://localhost:3000
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Stripe 支付配置
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+
+# 应用基础URL
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
 ## 📊 数据库表结构
 
 需要在 Supabase 中创建以下表：
+
+**注意：除了之前的表，还需要运行以下SQL文件创建支付相关表：**
+- `database_functions.sql` - 创建浏览量统计函数
+- `database_subscription_schema.sql` - 创建订阅和支付相关表
 
 ### 1. user_profiles 表
 
@@ -76,6 +88,24 @@ NextAuth Supabase适配器会自动创建以下表：
    - 开发环境: `http://localhost:3000/api/auth/callback/google`
    - 生产环境: `https://your-domain.com/api/auth/callback/google`
 
+## 💳 Stripe 支付设置
+
+1. 访问 [Stripe Dashboard](https://dashboard.stripe.com/)
+2. 创建账户或登录现有账户
+3. 获取 API 密钥：
+   - 可发布密钥 (Publishable key): `pk_test_...`
+   - 密钥 (Secret key): `sk_test_...`
+4. 设置 Webhook 端点：
+   - URL: `https://your-domain.com/api/webhooks/stripe`
+   - 监听事件: `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`
+   - 获取 Webhook 签名密钥: `whsec_...`
+
+## 👑 管理员权限设置
+
+1. 在 Supabase 中找到你的用户记录
+2. 将 `role` 字段设置为 `admin`
+3. 访问 `/admin` 路径进入管理后台
+
 ## ✨ 功能特性
 
 ### 用户认证
@@ -89,16 +119,39 @@ NextAuth Supabase适配器会自动创建以下表：
 - ✅ 用户名唯一性验证
 - ✅ 个人资料编辑
 
+### 会员订阅系统
+- ✅ 免费版（每日3篇文章）
+- ✅ VIP月付（$9/月，无限制）
+- ✅ VIP年付（$90/年，无限制）
+- ✅ Stripe 支付集成
+- ✅ 自动会员升级
+
 ### URL结构
 - ✅ 个人主页: `/{username}`
 - ✅ 用户文章: `/{username}/{slug}`
 - ✅ 向下兼容: `/{slug}`（无用户名的文章）
+- ✅ 订阅页面: `/subscription/pricing`
 
 ### 用户体验
 - ✅ 登录状态显示
 - ✅ 个人主页展示
 - ✅ 文章列表管理
 - ✅ 用户信息展示
+- ✅ 会员状态显示
+- ✅ 升级提示
+
+### 营销功能
+- ✅ 品牌营销信息展示
+- ✅ 文章浏览量统计
+- ✅ 右侧边栏布局
+- ✅ 用户主页营销横幅
+
+### 管理后台
+- ✅ 管理员仪表板
+- ✅ 用户管理（列表/搜索/查看）
+- ✅ 文章管理（列表/搜索/查看）
+- ✅ 订单管理
+- ✅ 数据统计功能
 
 ## 🚀 使用流程
 

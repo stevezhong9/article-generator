@@ -1,0 +1,176 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "update": "Actualizar",
+    "search": "Buscar",
+    "reset": "Restablecer",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "close": "Cerrar",
+    "submit": "Enviar",
+    "yes": "Sí",
+    "no": "No",
+    "confirm": "Confirmar",
+    "language": "Idioma",
+    "english": "Inglés",
+    "spanish": "Español",
+    "chinese": "Chino"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "pricing": "Precios",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "profile": "Perfil",
+    "dashboard": "Panel",
+    "admin": "Admin"
+  },
+  "footer": {
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "cookies": "Política de Cookies",
+    "dmca": "DMCA",
+    "contact": "Contáctanos",
+    "company": "Generador de Artículos",
+    "description": "Transforma cualquier URL en artículos atractivos con generación de contenido impulsada por IA.",
+    "rights": "Todos los derechos reservados."
+  },
+  "auth": {
+    "signIn": "Iniciar Sesión",
+    "signOut": "Cerrar Sesión",
+    "signInWith": "Iniciar sesión con {provider}",
+    "welcome": "¡Bienvenido de nuevo!",
+    "pleaseSignIn": "Por favor, inicia sesión para continuar"
+  },
+  "subscription": {
+    "free": "Gratis",
+    "vip": "VIP",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "upgrade": "Actualizar",
+    "current": "Plan Actual",
+    "unlimited": "Ilimitado",
+    "articlesPerDay": "{count} artículos por día",
+    "upgradePrompt": "Actualiza a VIP para artículos ilimitados"
+  },
+  "article": {
+    "generate": "Generar Artículo",
+    "generating": "Generando...",
+    "title": "Título",
+    "content": "Contenido",
+    "description": "Descripción",
+    "author": "Autor",
+    "publishDate": "Fecha de Publicación",
+    "sourceUrl": "URL de Origen",
+    "viewCount": "Vistas",
+    "createdAt": "Creado",
+    "share": "Compartir",
+    "download": "Descargar"
+  },
+  "profile": {
+    "editProfile": "Editar Perfil",
+    "personalInfo": "Información Personal",
+    "accountSettings": "Configuración de Cuenta",
+    "username": "Nombre de Usuario",
+    "email": "Correo Electrónico",
+    "name": "Nombre Completo",
+    "bio": "Biografía",
+    "website": "Sitio Web",
+    "avatar": "Avatar",
+    "saveChanges": "Guardar Cambios",
+    "deleteAccount": "Eliminar Cuenta",
+    "exportData": "Exportar Datos"
+  },
+  "pricing": {
+    "title": "Elige Tu Plan",
+    "subtitle": "Selecciona el plan perfecto para tus necesidades de creación de contenido",
+    "freePlan": {
+      "name": "Gratis",
+      "price": "$0",
+      "period": "para siempre",
+      "features": [
+        "3 artículos por día",
+        "Generación IA básica",
+        "Plantillas estándar",
+        "Soporte por email"
+      ]
+    },
+    "vipMonthly": {
+      "name": "VIP Mensual",
+      "price": "$9",
+      "period": "por mes",
+      "features": [
+        "Artículos ilimitados",
+        "Generación IA avanzada",
+        "Plantillas premium",
+        "Soporte prioritario",
+        "Marca personalizada",
+        "Panel de análisis"
+      ]
+    },
+    "vipYearly": {
+      "name": "VIP Anual",
+      "price": "$90",
+      "period": "por año",
+      "features": [
+        "Artículos ilimitados",
+        "Generación IA avanzada",
+        "Plantillas premium",
+        "Soporte prioritario",
+        "Marca personalizada",
+        "Panel de análisis",
+        "¡2 meses gratis!"
+      ]
+    },
+    "mostPopular": "Más Popular",
+    "startFree": "Comenzar Gratis",
+    "choosePlan": "Elegir Plan",
+    "upgradeNow": "Actualizar Ahora"
+  },
+  "legal": {
+    "privacyPolicy": "Política de Privacidad",
+    "termsOfService": "Términos de Servicio",
+    "cookiePolicy": "Política de Cookies",
+    "dmca": "Política DMCA",
+    "lastUpdated": "Última actualización: {date}",
+    "effectiveDate": "Fecha de vigencia: {date}",
+    "contactEmail": "Para preguntas, contáctanos en: {email}"
+  },
+  "admin": {
+    "dashboard": "Panel de Administración",
+    "users": "Usuarios",
+    "articles": "Artículos",
+    "orders": "Pedidos",
+    "financials": "Finanzas",
+    "settings": "Configuración",
+    "overview": "Resumen",
+    "userManagement": "Gestión de Usuarios",
+    "articleManagement": "Gestión de Artículos",
+    "orderManagement": "Gestión de Pedidos",
+    "financialManagement": "Gestión Financiera",
+    "systemSettings": "Configuración del Sistema",
+    "totalUsers": "Total de Usuarios",
+    "totalArticles": "Total de Artículos",
+    "totalRevenue": "Ingresos Totales",
+    "monthlyRevenue": "Ingresos Mensuales",
+    "vipUsers": "Usuarios VIP",
+    "todayArticles": "Artículos de Hoy"
+  },
+  "errors": {
+    "somethingWentWrong": "Algo salió mal",
+    "notFound": "Página no encontrada",
+    "unauthorized": "Acceso no autorizado",
+    "forbidden": "Acceso prohibido",
+    "serverError": "Error del servidor",
+    "networkError": "Error de red",
+    "tryAgain": "Por favor, inténtalo de nuevo"
+  }
+}

@@ -1,0 +1,333 @@
+/* ShareX AI Brand Colors */
+:root {
+  /* Primary Brand Colors */
+  --brand-blue: #2D9CDB;
+  --brand-blue-light: #5BB3E8;
+  --brand-blue-dark: #1E7AA6;
+  --brand-blue-50: rgba(45, 156, 219, 0.05);
+  --brand-blue-100: rgba(45, 156, 219, 0.1);
+  --brand-blue-200: rgba(45, 156, 219, 0.2);
+
+  --brand-orange: #FF7B54;
+  --brand-orange-light: #FF9B7A;
+  --brand-orange-dark: #E65A35;
+  --brand-orange-50: rgba(255, 123, 84, 0.05);
+  --brand-orange-100: rgba(255, 123, 84, 0.1);
+  --brand-orange-200: rgba(255, 123, 84, 0.2);
+
+  /* Brand Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-light) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--brand-orange) 0%, var(--brand-orange-light) 100%);
+  --gradient-multi: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-orange) 50%, #28A745 100%);
+  --gradient-share: linear-gradient(45deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
+
+  /* Neutral Colors */
+  --neutral-50: #F8F9FA;
+  --neutral-100: #F1F3F4;
+  --neutral-200: #E8EAED;
+  --neutral-300: #DADCE0;
+  --neutral-400: #BDC1C6;
+  --neutral-500: #9AA0A6;
+  --neutral-600: #80868B;
+  --neutral-700: #5F6368;
+  --neutral-800: #3C4043;
+  --neutral-900: #202124;
+
+  /* Semantic Colors with Brand Influence */
+  --success: #28A745;
+  --success-bg: #d4edda;
+  --warning: #FFC107;
+  --warning-bg: #fff3cd;
+  --error: #DC3545;
+  --error-bg: #f8d7da;
+  --info: var(--brand-blue);
+  --info-bg: var(--brand-blue-50);
+
+  /* Interactive Colors */
+  --link-color: var(--brand-blue);
+  --link-hover: var(--brand-blue-dark);
+  --button-primary: var(--brand-blue);
+  --button-primary-hover: var(--brand-blue-dark);
+  --button-secondary: var(--brand-orange);
+  --button-secondary-hover: var(--brand-orange-dark);
+
+  /* Shadow Colors */
+  --shadow-brand-blue: 0 4px 14px 0 rgba(45, 156, 219, 0.2);
+  --shadow-brand-orange: 0 4px 14px 0 rgba(255, 123, 84, 0.2);
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-medium: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  --shadow-large: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+/* Brand Button Styles */
+.btn-brand-primary {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-brand-blue);
+}
+
+.btn-brand-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 156, 219, 0.4);
+}
+
+.btn-brand-secondary {
+  background: var(--gradient-accent);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-brand-orange);
+}
+
+.btn-brand-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 123, 84, 0.4);
+}
+
+/* Brand Card Styles */
+.card-brand {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-subtle);
+  border: 1px solid var(--neutral-200);
+  transition: all 0.3s ease;
+}
+
+.card-brand:hover {
+  box-shadow: var(--shadow-medium);
+  border-color: var(--brand-blue-100);
+}
+
+.card-brand-featured {
+  border: 2px solid;
+  border-image: var(--gradient-share) 1;
+  border-radius: 12px;
+}
+
+/* Brand Badge Styles */
+.badge-vip {
+  background: var(--gradient-accent);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-free {
+  background: var(--neutral-100);
+  color: var(--neutral-700);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Brand Input Styles */
+.input-brand {
+  border: 2px solid var(--neutral-300);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.input-brand:focus {
+  outline: none;
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px var(--brand-blue-100);
+}
+
+/* Brand Loading Animation */
+.loading-brand {
+  background: var(--gradient-share);
+  background-size: 200% 200%;
+  animation: gradient-flow 2s ease infinite;
+}
+
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Brand Progress Bar */
+.progress-brand {
+  height: 4px;
+  background: var(--neutral-200);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-brand-bar {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Brand Share Animation */
+.share-pulse {
+  position: relative;
+}
+
+.share-pulse::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: var(--brand-blue);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse-ring 2s infinite;
+  opacity: 0;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* Brand Navigation */
+.nav-brand {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--neutral-200);
+}
+
+.nav-brand-link {
+  color: var(--neutral-700);
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-brand-link:hover {
+  color: var(--brand-blue);
+  background: var(--brand-blue-50);
+}
+
+.nav-brand-link.active {
+  color: var(--brand-blue);
+  background: var(--brand-blue-100);
+  font-weight: 600;
+}
+
+/* Brand Footer */
+.footer-brand {
+  background: linear-gradient(135deg, var(--neutral-800) 0%, var(--neutral-900) 100%);
+  color: var(--neutral-300);
+}
+
+.footer-brand-link {
+  color: var(--neutral-300);
+  transition: color 0.3s ease;
+}
+
+.footer-brand-link:hover {
+  color: var(--brand-blue-light);
+}
+
+/* Brand Modal */
+.modal-brand {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--neutral-200);
+}
+
+.modal-brand-header {
+  border-bottom: 1px solid var(--neutral-200);
+  padding: 20px 24px;
+}
+
+.modal-brand-title {
+  color: var(--neutral-800);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Brand Status Indicators */
+.status-online {
+  color: var(--success);
+}
+
+.status-pending {
+  color: var(--brand-orange);
+}
+
+.status-offline {
+  color: var(--neutral-500);
+}
+
+/* Brand Pricing Card */
+.pricing-card-popular {
+  border: 2px solid var(--brand-orange);
+  position: relative;
+  transform: scale(1.05);
+}
+
+.pricing-card-popular::before {
+  content: "Most Popular";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gradient-accent);
+  color: white;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Brand Stats Card */
+.stats-card-blue {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.stats-card-orange {
+  background: var(--gradient-accent);
+  color: white;
+}
+
+/* Responsive Brand Adjustments */
+@media (max-width: 768px) {
+  .btn-brand-primary,
+  .btn-brand-secondary {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .card-brand {
+    border-radius: 8px;
+  }
+  
+  .modal-brand {
+    border-radius: 12px;
+  }
+}

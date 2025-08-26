@@ -48,6 +48,7 @@ interface ArticleRecord {
   sourceUrl?: string;
   marketingData?: MarketingData | null;
   savedAt: string;
+  viewCount?: number;
 }
 
 export default function ArticlePage({ params }: ArticlePageProps) {
@@ -55,6 +56,21 @@ export default function ArticlePage({ params }: ArticlePageProps) {
   const [loading, setLoading] = useState(true);
   const [slug, setSlug] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'article' | 'longimage'>('article');
+  
+  // 增加浏览量的函数
+  const incrementViewCount = async (articleSlug: string) => {
+    try {
+      await fetch('/api/articles/view', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ slug: articleSlug }),
+      });
+    } catch (error) {
+      console.error('增加浏览量失败:', error);
+    }
+  };
 
   useEffect(() => {
     async function loadSlug() {
@@ -91,7 +107,8 @@ export default function ArticlePage({ params }: ArticlePageProps) {
             publishDate: articleData.publishDate,
             description: articleData.description,
             sourceUrl: articleData.sourceUrl,
-            marketingData: articleData.marketingData
+            marketingData: articleData.marketingData,
+            viewCount: articleData.viewCount
           };
           
           console.log('从API获取文章成功:', articleRecord.title);
@@ -100,6 +117,9 @@ export default function ArticlePage({ params }: ArticlePageProps) {
           
           // 缓存到localStorage
           localStorage.setItem(`article-${slug}`, JSON.stringify(articleRecord));
+          
+          // 增加浏览量
+          incrementViewCount(slug);
           
         } else {
           console.log('API未找到文章，尝试其他方式:', slug);
@@ -138,7 +158,8 @@ export default function ArticlePage({ params }: ArticlePageProps) {
             publishDate: articleData.publishDate,
             description: articleData.description,
             sourceUrl: articleData.sourceUrl,
-            marketingData: articleData.marketingData
+            marketingData: articleData.marketingData,
+            viewCount: articleData.viewCount || 0
           };
           
           console.log('URL参数解码成功:', articleRecord.title);
@@ -532,270 +553,255 @@ export default function ArticlePage({ params }: ArticlePageProps) {
         </div>
 
         {activeTab === 'article' ? (
-          <article style={{ padding: '32px' }}>
-            {/* 文章标题 - 与长图模版一致的样式 */}
-            <header style={{
-              textAlign: 'center',
-              marginBottom: '32px',
-              borderBottom: '1px solid #e5e7eb',
-              paddingBottom: '24px'
-            }}>
-              <h1 style={{
-                fontSize: '36px',
-                fontWeight: 'bold',
-                marginBottom: '16px',
-                lineHeight: '1.2',
-                color: '#1f2937'
+          <div style={{ 
+            display: 'flex', 
+            gap: '32px', 
+            padding: '32px',
+            flexDirection: window.innerWidth < 1024 ? 'column' : 'row'
+          }}>
+            {/* 左侧主内容区域 */}
+            <article style={{ flex: '1', minWidth: '0' }}>
+              {/* 文章标题 - 与长图模版一致的样式 */}
+              <header style={{
+                textAlign: 'center',
+                marginBottom: '32px',
+                borderBottom: '1px solid #e5e7eb',
+                paddingBottom: '24px'
               }}>
-                {article.title}
-              </h1>
-              
-              {/* 文章元信息 - 与长图模版一致 */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontSize: '14px',
-                opacity: 0.75,
-                gap: '16px',
-                color: '#6b7280'
-              }}>
-                <span>📅 {new Date(article.savedAt).toLocaleDateString('zh-CN')}</span>
-                <span>•</span>
-                <span>📄 {article.marketingData?.companyName || '文章转载工具'}</span>
-                {article.author && (
-                  <>
-                    <span>•</span>
-                    <span>✍️ {article.author}</span>
-                  </>
-                )}
-              </div>
-              
-              {article.description && (
-                <p style={{
-                  marginTop: '16px',
-                  fontSize: '18px',
-                  lineHeight: '1.6',
-                  color: '#4b5563'
+                <h1 style={{
+                  fontSize: '36px',
+                  fontWeight: 'bold',
+                  marginBottom: '16px',
+                  lineHeight: '1.2',
+                  color: '#1f2937'
                 }}>
-                  {article.description}
-                </p>
-              )}
-            </header>
-
-            {/* 文章内容 - 微信公众号样式 */}
-            <div 
-              className="article-content"
-              dangerouslySetInnerHTML={{ __html: article.content }}
-            />
-
-            {/* 转载来源 - 显示营销信息和原文链接 */}
-            {(article.sourceUrl || article.marketingData) && (
-              <div style={{
-                marginTop: '32px',
-                paddingTop: '24px',
-                borderTop: '1px solid #e5e7eb',
-                textAlign: 'center'
-              }}>
+                  {article.title}
+                </h1>
+                
+                {/* 文章元信息 - 与长图模版一致 */}
                 <div style={{
-                  backgroundColor: '#f9fafb',
-                  padding: '20px',
-                  borderRadius: '12px',
-                  border: '1px solid #e5e7eb'
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                  opacity: 0.75,
+                  gap: '16px',
+                  color: '#6b7280',
+                  flexWrap: 'wrap'
                 }}>
-                  {/* 转载信息标题 */}
-                  <h4 style={{
+                  <span>📅 {new Date(article.savedAt).toLocaleDateString('zh-CN')}</span>
+                  <span>•</span>
+                  <span>📄 {article.marketingData?.companyName || '文章转载工具'}</span>
+                  {article.author && (
+                    <>
+                      <span>•</span>
+                      <span>✍️ {article.author}</span>
+                    </>
+                  )}
+                  {typeof article.viewCount === 'number' && article.viewCount > 0 && (
+                    <>
+                      <span>•</span>
+                      <span>👀 {article.viewCount.toLocaleString()} 浏览</span>
+                    </>
+                  )}
+                </div>
+                
+                {article.description && (
+                  <p style={{
+                    marginTop: '16px',
+                    fontSize: '18px',
+                    lineHeight: '1.6',
+                    color: '#4b5563'
+                  }}>
+                    {article.description}
+                  </p>
+                )}
+              </header>
+
+              {/* 文章内容 - 微信公众号样式 */}
+              <div 
+                className="article-content"
+                dangerouslySetInnerHTML={{ __html: article.content }}
+              />
+
+              {/* 原文链接 */}
+              {article.sourceUrl && (
+                <div style={{
+                  marginTop: '32px',
+                  paddingTop: '24px',
+                  borderTop: '1px solid #e5e7eb',
+                  textAlign: 'center'
+                }}>
+                  <div style={{
+                    backgroundColor: '#f9fafb',
+                    padding: '20px',
+                    borderRadius: '12px',
+                    border: '1px solid #e5e7eb'
+                  }}>
+                    <h4 style={{
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      marginBottom: '16px',
+                      color: '#1f2937'
+                    }}>
+                      📄 转载信息
+                    </h4>
+                    <p style={{
+                      fontSize: '12px',
+                      marginBottom: '8px',
+                      color: '#6b7280'
+                    }}>
+                      本文转载自原作者，版权归原作者所有
+                    </p>
+                    <div style={{ fontSize: '12px' }}>
+                      <span style={{ color: '#6b7280' }}>
+                        原文链接: 
+                      </span>
+                      <a 
+                        href={article.sourceUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ 
+                          color: '#007AFF',
+                          wordBreak: 'break-all',
+                          textDecoration: 'underline'
+                        }}
+                      >
+                        {article.sourceUrl}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </article>
+
+            {/* 右侧边栏 */}
+            <aside style={{ 
+              width: window.innerWidth < 1024 ? '100%' : '300px',
+              flexShrink: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '24px'
+            }}>
+              {/* 营销信息卡片 */}
+              {article.marketingData && (article.marketingData.logo || article.marketingData.companyName || article.marketingData.website || article.marketingData.email || article.marketingData.phone) && (
+                <div style={{
+                  backgroundColor: '#f8f9fa',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  textAlign: 'center'
+                }}>
+                  <h3 style={{
                     fontSize: '16px',
                     fontWeight: '600',
                     marginBottom: '16px',
                     color: '#1f2937'
                   }}>
-                    📄 转载信息
-                  </h4>
+                    🏢 转载方信息
+                  </h3>
                   
-                  {/* 营销推广信息 */}
-                  {article.marketingData && (article.marketingData.companyName || article.marketingData.website) && (
+                  {/* Logo */}
+                  {article.marketingData.logo && (
+                    <img 
+                      src={article.marketingData.logo} 
+                      alt="Brand Logo" 
+                      style={{
+                        height: '50px',
+                        maxWidth: '150px',
+                        objectFit: 'contain',
+                        marginBottom: '12px',
+                        display: 'block',
+                        margin: '0 auto 12px auto'
+                      }}
+                    />
+                  )}
+                  
+                  {/* 公司名称 */}
+                  {article.marketingData.companyName && (
                     <div style={{
-                      backgroundColor: '#ffffff',
-                      padding: '16px',
-                      borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
-                      marginBottom: '16px'
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '12px'
                     }}>
-                      <div style={{
-                        fontSize: '14px',
-                        fontWeight: '500',
-                        marginBottom: '8px',
-                        color: '#374151'
-                      }}>
-                        🏢 转载方信息
-                      </div>
-                      
-                      {article.marketingData.companyName && (
-                        <div style={{
-                          fontSize: '16px',
-                          fontWeight: '600',
-                          color: '#1f2937',
-                          marginBottom: '8px'
-                        }}>
-                          {article.marketingData.companyName}
-                        </div>
-                      )}
-                      
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '16px',
-                        fontSize: '13px',
-                        flexWrap: 'wrap'
-                      }}>
-                        {article.marketingData.website && (
-                          <a 
-                            href={article.marketingData.website.startsWith('http') ? article.marketingData.website : `https://${article.marketingData.website}`}
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            style={{ 
-                              color: '#007AFF',
-                              textDecoration: 'none',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px'
-                            }}
-                          >
-                            🌐 官网: {article.marketingData.website}
-                          </a>
-                        )}
-                        
-                        {article.marketingData.website && article.marketingData.email && (
-                          <span style={{ color: '#d1d5db' }}>|</span>
-                        )}
-                        
-                        {article.marketingData.email && (
-                          <a 
-                            href={`mailto:${article.marketingData.email}`}
-                            style={{ 
-                              color: '#007AFF',
-                              textDecoration: 'none',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px'
-                            }}
-                          >
-                            📧 邮箱: {article.marketingData.email}
-                          </a>
-                        )}
-                      </div>
+                      {article.marketingData.companyName}
                     </div>
                   )}
                   
-                  {/* 原文链接 */}
-                  {article.sourceUrl && (
-                    <div>
-                      <p style={{
-                        fontSize: '12px',
-                        marginBottom: '8px',
-                        color: '#6b7280'
-                      }}>
-                        本文转载自原作者，版权归原作者所有
-                      </p>
-                      <div style={{ fontSize: '12px' }}>
-                        <span style={{ color: '#6b7280' }}>
-                          原文链接: 
-                        </span>
+                  {/* 联系信息 */}
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    fontSize: '14px',
+                    color: '#4b5563'
+                  }}>
+                    {article.marketingData.website && (
+                      <div>
                         <a 
-                          href={article.sourceUrl} 
+                          href={article.marketingData.website.startsWith('http') ? article.marketingData.website : `https://${article.marketingData.website}`}
                           target="_blank" 
                           rel="noopener noreferrer"
                           style={{ 
                             color: '#007AFF',
-                            wordBreak: 'break-all',
-                            textDecoration: 'underline'
+                            textDecoration: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '4px'
                           }}
                         >
-                          {article.sourceUrl}
+                          🌐 官网
                         </a>
                       </div>
-                    </div>
-                  )}
+                    )}
+                    
+                    {article.marketingData.email && (
+                      <div>
+                        <a 
+                          href={`mailto:${article.marketingData.email}`}
+                          style={{ 
+                            color: '#007AFF',
+                            textDecoration: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          📧 {article.marketingData.email}
+                        </a>
+                      </div>
+                    )}
+                    
+                    {article.marketingData.phone && (
+                      <div>
+                        <a 
+                          href={`tel:${article.marketingData.phone}`}
+                          style={{ 
+                            color: '#007AFF',
+                            textDecoration: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          📞 {article.marketingData.phone}
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* 联系方式区域 - 与长图模版一致 */}
-            {article.marketingData && (
-              <div style={{
-                marginTop: '32px',
-                paddingTop: '24px',
-                borderTop: '1px solid #e5e7eb',
-                textAlign: 'center'
-              }}>
-                <h3 style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  marginBottom: '16px',
-                  color: '#1f2937'
-                }}>
-                  联系我们
-                </h3>
-                
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  fontSize: '14px',
-                  color: '#4b5563'
-                }}>
-                  {article.marketingData.website && (
-                    <div>
-                      <span style={{ fontWeight: '500' }}>官网: </span>
-                      <a 
-                        href={article.marketingData.website} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: '#007AFF', textDecoration: 'underline' }}
-                      >
-                        {article.marketingData.website}
-                      </a>
-                    </div>
-                  )}
-                  
-                  {(article.marketingData.email || article.marketingData.phone) && (
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      gap: '24px',
-                      marginTop: '8px'
-                    }}>
-                      {article.marketingData.email && (
-                        <div>
-                          <span style={{ fontWeight: '500' }}>邮箱: </span>
-                          <a 
-                            href={`mailto:${article.marketingData.email}`}
-                            style={{ color: '#007AFF' }}
-                          >
-                            {article.marketingData.email}
-                          </a>
-                        </div>
-                      )}
-                      
-                      {article.marketingData.phone && (
-                        <div>
-                          <span style={{ fontWeight: '500' }}>电话: </span>
-                          <a 
-                            href={`tel:${article.marketingData.phone}`}
-                            style={{ color: '#007AFF' }}
-                          >
-                            {article.marketingData.phone}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+              {/* 最近文章列表 */}
+              <div>
+                <RecentArticles />
               </div>
-            )}
-          </article>
+            </aside>
+          </div>
         ) : (
           <div style={{ padding: '32px' }}>
             <LongImageGenerator article={article} />
@@ -867,13 +873,6 @@ export default function ArticlePage({ params }: ArticlePageProps) {
           </div>
         </div>
 
-        {/* 最近文章列表 */}
-        <div style={{
-          borderTop: '1px solid #e5e7eb',
-          padding: '32px'
-        }}>
-          <RecentArticles />
-        </div>
       </div>
     </div>
   );

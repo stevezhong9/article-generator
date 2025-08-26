@@ -42,7 +42,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { username, bio, website } = await request.json();
+    const { username, bio, website, marketingData } = await request.json();
     
     // 验证用户名格式
     if (username && !/^[a-zA-Z0-9_]{3,30}$/.test(username)) {
@@ -66,7 +66,8 @@ export async function PUT(request: NextRequest) {
     const updatedProfile = await ArticleSupabase.updateUserProfile(session.user.id, {
       username: username || null,
       bio: bio || null,
-      website: website || null
+      website: website || null,
+      marketing_data: marketingData || null
     });
 
     return NextResponse.json({

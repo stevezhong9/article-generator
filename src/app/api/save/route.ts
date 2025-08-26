@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { ArticleData } from '@/lib/scraper';
 import { MarketingData } from '@/components/MarketingInfo';
 import { ArticleSupabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
+    // 检查用户登录状态
+    const session = await getServerSession(authOptions);
+    
     const requestData: { 
       url: string; 
       marketingData?: MarketingData;
@@ -18,6 +23,7 @@ export async function POST(request: NextRequest) {
     console.log('=== SAVE API DEBUG ===');
     console.log('收到的完整数据:', JSON.stringify(fullArticleData, null, 2));
     console.log('营销数据:', JSON.stringify(marketingData, null, 2));
+    console.log('用户会话:', session?.user?.id);
     
     // 检查必需字段
     const missingFields = [];
@@ -36,6 +42,37 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       );
+    }
+
+    // 如果用户已登录，检查文章创建权限
+    if (session?.user?.id) {
+      const actualUserId = session.user.id;
+      const canCreate = await ArticleSupabase.canUserCreateArticle(actualUserId);
+      
+      if (!canCreate) {
+        const isVip = await ArticleSupabase.isUserVip(actualUserId);
+        if (isVip) {
+          return NextResponse.json(
+            { 
+              error: '系统错误，请稍后重试',
+              success: false
+            },
+            { status: 500 }
+          );
+        } else {
+          return NextResponse.json(
+            { 
+              error: '免费版每日限制3篇文章，请升级VIP获得无限制访问',
+              success: false,
+              needUpgrade: true
+            },
+            { status: 403 }
+          );
+        }
+      }
+      
+      // 更新用户今日使用量
+      await ArticleSupabase.incrementUserDailyUsage(actualUserId);
     }
 
     // 使用 Vercel KV 存储文章

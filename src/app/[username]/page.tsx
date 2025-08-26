@@ -16,6 +16,13 @@ interface UserProfile {
   bio?: string;
   website?: string;
   avatar_url?: string;
+  marketing_data?: {
+    companyName?: string;
+    logo?: string;
+    website?: string;
+    email?: string;
+    phone?: string;
+  };
 }
 
 interface Article {
@@ -103,6 +110,68 @@ export default function UserPage({ params }: UserPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* 营销信息横幅 - 如果有的话 */}
+        {userProfile.marketing_data && (userProfile.marketing_data.companyName || userProfile.marketing_data.logo) && (
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg p-8 mb-8 text-white text-center">
+            {/* Logo */}
+            {userProfile.marketing_data.logo && (
+              <div className="mb-4">
+                <img 
+                  src={userProfile.marketing_data.logo} 
+                  alt="Brand Logo" 
+                  className="h-16 mx-auto object-contain bg-white/10 rounded-lg p-2"
+                />
+              </div>
+            )}
+            
+            {/* 公司名称 */}
+            {userProfile.marketing_data.companyName && (
+              <h2 className="text-2xl font-bold mb-4">{userProfile.marketing_data.companyName}</h2>
+            )}
+            
+            {/* 联系信息 */}
+            <div className="flex flex-wrap justify-center gap-6 text-sm">
+              {userProfile.marketing_data.website && (
+                <a 
+                  href={userProfile.marketing_data.website.startsWith('http') ? userProfile.marketing_data.website : `https://${userProfile.marketing_data.website}`}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                  </svg>
+                  官网
+                </a>
+              )}
+              
+              {userProfile.marketing_data.email && (
+                <a 
+                  href={`mailto:${userProfile.marketing_data.email}`}
+                  className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  联系邮箱
+                </a>
+              )}
+              
+              {userProfile.marketing_data.phone && (
+                <a 
+                  href={`tel:${userProfile.marketing_data.phone}`}
+                  className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  联系电话
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* 用户信息头部 */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">

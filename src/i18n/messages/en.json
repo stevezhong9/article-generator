@@ -1,0 +1,176 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "update": "Update",
+    "search": "Search",
+    "reset": "Reset",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "submit": "Submit",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "language": "Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "chinese": "Chinese"
+  },
+  "navigation": {
+    "home": "Home",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "logout": "Logout",
+    "profile": "Profile",
+    "dashboard": "Dashboard",
+    "admin": "Admin"
+  },
+  "footer": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy",
+    "dmca": "DMCA",
+    "contact": "Contact Us",
+    "company": "Article Generator",
+    "description": "Transform any URL into engaging articles with AI-powered content generation.",
+    "rights": "All rights reserved."
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signInWith": "Sign in with {provider}",
+    "welcome": "Welcome back!",
+    "pleaseSignIn": "Please sign in to continue"
+  },
+  "subscription": {
+    "free": "Free",
+    "vip": "VIP",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "upgrade": "Upgrade",
+    "current": "Current Plan",
+    "unlimited": "Unlimited",
+    "articlesPerDay": "{count} articles per day",
+    "upgradePrompt": "Upgrade to VIP for unlimited articles"
+  },
+  "article": {
+    "generate": "Generate Article",
+    "generating": "Generating...",
+    "title": "Title",
+    "content": "Content",
+    "description": "Description",
+    "author": "Author",
+    "publishDate": "Publish Date",
+    "sourceUrl": "Source URL",
+    "viewCount": "Views",
+    "createdAt": "Created",
+    "share": "Share",
+    "download": "Download"
+  },
+  "profile": {
+    "editProfile": "Edit Profile",
+    "personalInfo": "Personal Information",
+    "accountSettings": "Account Settings",
+    "username": "Username",
+    "email": "Email",
+    "name": "Full Name",
+    "bio": "Bio",
+    "website": "Website",
+    "avatar": "Avatar",
+    "saveChanges": "Save Changes",
+    "deleteAccount": "Delete Account",
+    "exportData": "Export Data"
+  },
+  "pricing": {
+    "title": "Choose Your Plan",
+    "subtitle": "Select the perfect plan for your content creation needs",
+    "freePlan": {
+      "name": "Free",
+      "price": "$0",
+      "period": "forever",
+      "features": [
+        "3 articles per day",
+        "Basic AI generation",
+        "Standard templates",
+        "Email support"
+      ]
+    },
+    "vipMonthly": {
+      "name": "VIP Monthly",
+      "price": "$9",
+      "period": "per month",
+      "features": [
+        "Unlimited articles",
+        "Advanced AI generation",
+        "Premium templates",
+        "Priority support",
+        "Custom branding",
+        "Analytics dashboard"
+      ]
+    },
+    "vipYearly": {
+      "name": "VIP Yearly",
+      "price": "$90",
+      "period": "per year",
+      "features": [
+        "Unlimited articles",
+        "Advanced AI generation",
+        "Premium templates",
+        "Priority support",
+        "Custom branding",
+        "Analytics dashboard",
+        "2 months free!"
+      ]
+    },
+    "mostPopular": "Most Popular",
+    "startFree": "Start Free",
+    "choosePlan": "Choose Plan",
+    "upgradeNow": "Upgrade Now"
+  },
+  "legal": {
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "cookiePolicy": "Cookie Policy",
+    "dmca": "DMCA Policy",
+    "lastUpdated": "Last updated: {date}",
+    "effectiveDate": "Effective date: {date}",
+    "contactEmail": "For questions, contact us at: {email}"
+  },
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "users": "Users",
+    "articles": "Articles",
+    "orders": "Orders",
+    "financials": "Financials",
+    "settings": "Settings",
+    "overview": "Overview",
+    "userManagement": "User Management",
+    "articleManagement": "Article Management",
+    "orderManagement": "Order Management",
+    "financialManagement": "Financial Management",
+    "systemSettings": "System Settings",
+    "totalUsers": "Total Users",
+    "totalArticles": "Total Articles",
+    "totalRevenue": "Total Revenue",
+    "monthlyRevenue": "Monthly Revenue",
+    "vipUsers": "VIP Users",
+    "todayArticles": "Today's Articles"
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong",
+    "notFound": "Page not found",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "serverError": "Server error",
+    "networkError": "Network error",
+    "tryAgain": "Please try again"
+  }
+}

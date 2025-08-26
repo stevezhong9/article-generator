@@ -50,6 +50,7 @@ interface ArticleRecord {
   marketingData?: MarketingData | null;
   savedAt: string;
   username?: string;
+  viewCount?: number;
 }
 
 interface UserProfile {
@@ -67,6 +68,21 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
   const [username, setUsername] = useState<string>('');
   const [slug, setSlug] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'article' | 'longimage'>('article');
+  
+  // 增加浏览量的函数
+  const incrementViewCount = async (articleUsername: string, articleSlug: string) => {
+    try {
+      await fetch('/api/articles/view', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: articleUsername, slug: articleSlug }),
+      });
+    } catch (error) {
+      console.error('增加浏览量失败:', error);
+    }
+  };
 
   useEffect(() => {
     async function loadParams() {
@@ -106,13 +122,17 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
           description: articleData.description,
           sourceUrl: articleData.sourceUrl,
           marketingData: articleData.marketingData,
-          username: articleData.username
+          username: articleData.username,
+          viewCount: articleData.viewCount
         };
         
         console.log('从API获取文章成功:', articleRecord.title);
         console.log('营销数据:', articleRecord.marketingData);
         setArticle(articleRecord);
         setUserProfile(userProfileData);
+        
+        // 增加浏览量
+        incrementViewCount(username, slug);
         
       } else {
         console.log('API未找到文章:', username, slug);
@@ -550,7 +570,8 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
                 fontSize: '14px',
                 opacity: 0.75,
                 gap: '16px',
-                color: '#6b7280'
+                color: '#6b7280',
+                flexWrap: 'wrap'
               }}>
                 <span>📅 {new Date(article.savedAt).toLocaleDateString('zh-CN')}</span>
                 <span>•</span>
@@ -559,6 +580,12 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
                   <>
                     <span>•</span>
                     <span>✍️ {article.author}</span>
+                  </>
+                )}
+                {typeof article.viewCount === 'number' && article.viewCount > 0 && (
+                  <>
+                    <span>•</span>
+                    <span>👀 {article.viewCount.toLocaleString()} 浏览</span>
                   </>
                 )}
               </div>

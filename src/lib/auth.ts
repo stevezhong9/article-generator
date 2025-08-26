@@ -19,15 +19,16 @@ export const authOptions: NextAuthOptions = {
       if (session?.user) {
         // 添加用户信息到session
         session.user.id = user.id
-        // 获取用户的自定义用户名
+        // 获取用户的自定义用户名和角色
         if (supabase) {
           const { data: profile } = await supabase
             .from('user_profiles')
-            .select('username')
+            .select('username, role')
             .eq('user_id', user.id)
             .single()
           
           session.user.username = profile?.username || null
+          session.user.role = profile?.role || 'user'
         }
       }
       return session

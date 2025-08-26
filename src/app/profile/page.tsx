@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { UserProfile } from '@/lib/supabase';
+import { MarketingData } from '@/components/MarketingInfo';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -10,6 +11,7 @@ export default function ProfilePage() {
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [website, setWebsite] = useState('');
+  const [marketingData, setMarketingData] = useState<MarketingData>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -31,6 +33,7 @@ export default function ProfilePage() {
         setUsername(result.data.username || '');
         setBio(result.data.bio || '');
         setWebsite(result.data.website || '');
+        setMarketingData(result.data.marketing_data || {});
       }
     } catch (error) {
       console.error('加载用户配置失败:', error);
@@ -98,6 +101,7 @@ export default function ProfilePage() {
           username: username || null,
           bio: bio || null,
           website: website || null,
+          marketingData: Object.keys(marketingData).length > 0 ? marketingData : null,
         }),
       });
 
@@ -266,6 +270,103 @@ export default function ProfilePage() {
               />
             </div>
 
+            {/* 品牌营销信息 */}
+            <div className="border-t border-gray-200 pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">品牌营销信息</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                设置您的品牌信息，将在您的主页和文章中展示，帮助推广您的品牌。
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* 公司名称 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    公司/品牌名称
+                  </label>
+                  <input
+                    type="text"
+                    value={marketingData.companyName || ''}
+                    onChange={(e) => setMarketingData({...marketingData, companyName: e.target.value})}
+                    placeholder="您的公司或品牌名称"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Logo URL */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    品牌Logo链接
+                  </label>
+                  <input
+                    type="url"
+                    value={marketingData.logo || ''}
+                    onChange={(e) => setMarketingData({...marketingData, logo: e.target.value})}
+                    placeholder="https://example.com/logo.png"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                {/* 公司网站 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    公司官网
+                  </label>
+                  <input
+                    type="url"
+                    value={marketingData.website || ''}
+                    onChange={(e) => setMarketingData({...marketingData, website: e.target.value})}
+                    placeholder="https://company.com"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                {/* 联系邮箱 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    联系邮箱
+                  </label>
+                  <input
+                    type="email"
+                    value={marketingData.email || ''}
+                    onChange={(e) => setMarketingData({...marketingData, email: e.target.value})}
+                    placeholder="contact@company.com"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                {/* 联系电话 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    联系电话
+                  </label>
+                  <input
+                    type="tel"
+                    value={marketingData.phone || ''}
+                    onChange={(e) => setMarketingData({...marketingData, phone: e.target.value})}
+                    placeholder="400-123-4567"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Logo预览 */}
+              {marketingData.logo && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Logo预览</label>
+                  <div className="border border-gray-300 rounded-md p-4 bg-gray-50">
+                    <img 
+                      src={marketingData.logo} 
+                      alt="Brand Logo Preview"
+                      className="h-16 object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* 错误和成功消息 */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-md p-3">
@@ -289,7 +390,7 @@ export default function ProfilePage() {
               </button>
               <button
                 onClick={handleSave}
-                disabled={loading || (username && usernameStatus === 'taken')}
+                disabled={loading || (!!username && usernameStatus === 'taken')}
                 className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {loading ? '保存中...' : '保存配置'}
