@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { locales, type Locale } from '@/i18n/config';
@@ -18,7 +18,6 @@ const languageFlags = {
 } as const;
 
 export default function LanguageSwitcher({ className = '' }: { className?: string }) {
-  const t = useTranslations('common');
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();

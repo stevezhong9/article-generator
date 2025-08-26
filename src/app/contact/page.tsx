@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function ContactPage() {
-  const t = useTranslations('Contact');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
