@@ -29,10 +29,19 @@ const nextConfig: NextConfig = {
 
   // Image optimization configuration
   images: {
-    domains: [
-      'localhost',
-      'lh3.googleusercontent.com', // Google OAuth avatars
-      'avatars.githubusercontent.com', // GitHub avatars
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
     ],
   },
 
