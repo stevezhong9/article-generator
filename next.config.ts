@@ -14,10 +14,8 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Skip problematic pages during static generation
-  experimental: {
-    skipTrailingSlashRedirect: true,
-  },
+  // Skip trailing slash redirect  
+  skipTrailingSlashRedirect: true,
   
   // Enable turbopack features
   turbopack: {
