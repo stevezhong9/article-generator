@@ -58,8 +58,32 @@ export const authOptions: NextAuthOptions = {
         }
       }
       return true
+    },
+    async redirect({ url, baseUrl }) {
+      // 如果是弹窗登录，重定向到弹窗处理页面
+      if (url.includes('popup=true')) {
+        return `${baseUrl}/auth/popup?${new URL(url).searchParams}`;
+      }
+      
+      // 如果url是相对路径，使用baseUrl
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      }
+      
+      // 如果url是同源的，直接返回
+      try {
+        if (new URL(url).origin === baseUrl) {
+          return url;
+        }
+      } catch {
+        // URL格式错误时返回baseUrl
+      }
+      
+      // 否则返回baseUrl
+      return baseUrl;
     }
   },
+  // 移除自定义页面配置，使用 NextAuth 默认页面
   session: {
     strategy: 'database'
   }
