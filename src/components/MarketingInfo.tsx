@@ -51,7 +51,7 @@ export default function MarketingInfo({ onUpdate, initialCollapsed = true, initi
       // 通知父组件
       onUpdate(finalData);
     }
-  }, [initialData, onUpdate]);
+  }, [initialData]); // 移除 onUpdate 函数依赖避免无限循环
 
   const handleInputChange = (field: keyof MarketingData, value: string) => {
     const newData = { ...formData, [field]: value };

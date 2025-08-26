@@ -16,10 +16,10 @@ export default function ArticleForm({ onSubmit, loading, initialUrl = '', initia
 
   // Update URL when initialUrl prop changes
   useEffect(() => {
-    if (initialUrl && initialUrl !== url) {
+    if (initialUrl) {
       setUrl(initialUrl);
     }
-  }, [initialUrl, url]);
+  }, [initialUrl]); // 移除 url 依赖避免无限循环
 
   // Update marketing data when initialMarketingData prop changes
   useEffect(() => {
