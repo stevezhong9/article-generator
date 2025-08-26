@@ -8,9 +8,11 @@ export async function POST(request: NextRequest) {
     const requestData: { 
       url: string; 
       marketingData?: MarketingData;
+      userId?: string;
+      username?: string;
     } & ArticleData = await request.json();
     
-    const { url, marketingData, ...articleData } = requestData;
+    const { url, marketingData, userId, username, ...articleData } = requestData;
     const fullArticleData = { ...articleData, url };
     
     console.log('=== SAVE API DEBUG ===');
@@ -56,7 +58,9 @@ export async function POST(request: NextRequest) {
         author: fullArticleData.author,
         publish_date: fullArticleData.publishDate,
         source_url: fullArticleData.url,
-        marketing_data: marketingData || undefined
+        marketing_data: marketingData || undefined,
+        user_id: userId || undefined,
+        username: username || undefined
       });
       
       console.log(`文章已保存到Supabase: ${savedArticle.slug}`);
@@ -73,13 +77,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 生成URL路径，优先使用用户名结构
+    const articleUrl = username ? `/${username}/${finalSlug}` : `/${finalSlug}`;
+
     return NextResponse.json({
       success: true,
       data: {
         slug: finalSlug,
-        title: articleData.title,
+        title: fullArticleData.title,
         content: fullContent,
-        url: `/${finalSlug}`,
+        url: articleUrl,
         markdown: fullContent
       }
     });
