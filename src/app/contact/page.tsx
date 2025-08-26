@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function ContactPage() {
-  const t = useTranslations();
+  const t = useTranslations('Contact');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -78,7 +78,7 @@ export default function ContactPage() {
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              {t('footer.contact')}
+              联系我们
             </h1>
             <p className="text-lg text-gray-600">
               We'd love to hear from you. Send us a message and we'll respond as soon as possible.
@@ -292,7 +292,7 @@ export default function ContactPage() {
               href="/" 
               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
-              ← {t('common.back')} to {t('footer.company')}
+              ← 返回 ShareX AI
             </a>
           </div>
         </div>
