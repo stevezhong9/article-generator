@@ -1,12 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Logo from '@/components/Logo';
 import Link from 'next/link';
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const [showLoadingFallback, setShowLoadingFallback] = useState(false);
+
+  // 如果超过3秒还在加载，显示内容而不是无限loading
+  useEffect(() => {
+    if (status === 'loading') {
+      const timer = setTimeout(() => {
+        setShowLoadingFallback(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [article, setArticle] = useState<any>(null);
@@ -72,12 +83,20 @@ export default function Home() {
     setSaved(null);
   };
 
-  if (status === 'loading') {
+  // 如果正在加载且没有超时，显示简化的加载状态
+  if (status === 'loading' && !showLoadingFallback) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">加载中...</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center mb-8">
+            <Logo size="lg" linkToHome={false} priority className="drop-shadow-2xl mb-4" />
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">ShareX AI</h1>
+            <p className="text-lg text-gray-600 mb-1">AI超级分享平台</p>
+            <div className="flex items-center justify-center mt-6">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-2 text-gray-600">正在加载用户信息...</span>
+            </div>
+          </div>
         </div>
       </div>
     );
