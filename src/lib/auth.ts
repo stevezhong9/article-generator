@@ -60,9 +60,6 @@ export const authOptions: NextAuthOptions = {
       return true
     }
   },
-  pages: {
-    signIn: '/auth/signin',
-  },
   session: {
     strategy: 'database'
   }
