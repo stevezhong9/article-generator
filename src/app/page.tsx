@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Logo from '@/components/Logo';
 import Link from 'next/link';
+import ArticleForm from '@/components/ArticleForm';
+import { MarketingData } from '@/components/MarketingInfo';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -18,16 +20,24 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [status]);
-  const [url, setUrl] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [article, setArticle] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<{ path: string; url: string } | null>(null);
+  const [initialUrl, setInitialUrl] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!url.trim()) return;
-    
+  // 检查URL参数，用于书签工具
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlParam = urlParams.get('url');
+    if (urlParam) {
+      setInitialUrl(decodeURIComponent(urlParam));
+    }
+  }, []);
+
+  // 处理文章提交
+  const handleArticleSubmit = async (url: string, marketingData?: MarketingData) => {
     setLoading(true);
     setError(null);
     
@@ -42,7 +52,7 @@ export default function Home() {
       
       if (result.success) {
         setArticle(result.data);
-        // 自动保存
+        // 自动保存，包含营销信息
         setTimeout(async () => {
           try {
             const saveResponse = await fetch('/api/save', {
@@ -51,7 +61,8 @@ export default function Home() {
               body: JSON.stringify({
                 ...result.data,
                 userId: session?.user?.id,
-                username: session?.user?.username
+                username: session?.user?.username,
+                marketingData // 包含营销推广信息
               })
             });
             const saveResult = await saveResponse.json();
@@ -77,10 +88,19 @@ export default function Home() {
   };
 
   const handleReset = () => {
-    setUrl('');
     setArticle(null);
     setError(null);
     setSaved(null);
+  };
+
+  // 生成书签工具代码
+  const generateBookmarklet = () => {
+    const bookmarkletCode = `javascript:(function(){
+      const currentUrl = window.location.href;
+      const siteName = '${process.env.NEXT_PUBLIC_SITE_URL || 'https://sharetox.com'}';
+      window.open(siteName + '?url=' + encodeURIComponent(currentUrl), '_blank', 'width=800,height=600');
+    })();`;
+    return bookmarkletCode;
   };
 
   // 如果正在加载且没有超时，显示简化的加载状态
@@ -90,8 +110,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="text-center mb-8">
             <Logo size="lg" linkToHome={false} priority className="drop-shadow-2xl mb-4" />
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">ShareX AI</h1>
-            <p className="text-lg text-gray-600 mb-1">AI超级分享平台</p>
+            <p className="text-sm text-gray-500">一键转发文章，智能营销推广</p>
             <div className="flex items-center justify-center mt-6">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               <span className="ml-2 text-gray-600">正在加载用户信息...</span>
@@ -108,9 +127,7 @@ export default function Home() {
         {/* Header */}
         <div className="text-center mb-8">
           <Logo size="lg" linkToHome={false} priority className="drop-shadow-2xl mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">ShareX AI</h1>
-          <p className="text-lg text-gray-600 mb-1">AI超级分享平台</p>
-          <p className="text-sm text-gray-500">Powered by ShareX AI Technology</p>
+          <p className="text-sm text-gray-500">一键转发文章，智能营销推广</p>
         </div>
 
         {/* User Status */}
@@ -126,7 +143,10 @@ export default function Home() {
               </div>
             </div>
             <div className="flex space-x-2">
-              <Link href="/profile" className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+              <Link href={`/${session.user?.username || 'user'}`} className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                我的文章
+              </Link>
+              <Link href="/profile" className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700">
                 个人资料
               </Link>
               <button
@@ -155,7 +175,7 @@ export default function Home() {
                   console.log('登录结果:', result);
                 } catch (error) {
                   console.error('登录错误:', error);
-                  alert('登录过程出现错误: ' + error.message);
+                  alert('登录过程出现错误: ' + (error as Error).message);
                 }
               }}
               className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -171,94 +191,151 @@ export default function Home() {
           </div>
         )}
 
-        {/* Main Form */}
-        {session && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">文章链接处理</h2>
-            
-            {!article ? (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    📋 待转发文章URL
-                  </label>
-                  <input
-                    type="url"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://example.com/article"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    disabled={loading}
-                  />
-                </div>
-                
-                {error && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                    {error}
-                  </div>
-                )}
-                
-                <button
-                  type="submit"
-                  disabled={loading || !url.trim()}
-                  className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        {/* 书签工具栏（对所有用户显示） */}
+        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6 mb-6">
+          <div className="flex items-start space-x-4">
+            <div className="text-3xl">🔖</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-orange-900 mb-2">一键转发书签工具</h3>
+              <p className="text-sm text-orange-700 mb-4">
+                拖拽下方按钮到浏览器书签栏，在任意网页点击即可快速转发文章
+              </p>
+              
+              <div className="flex items-center space-x-4">
+                <a
+                  href={generateBookmarklet()}
+                  className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 cursor-move select-none"
+                  draggable="true"
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('text/html', `<a href="${generateBookmarklet()}">ShareX 一键转发</a>`);
+                  }}
                 >
-                  {loading ? '处理中...' : '🚀 开始处理'}
-                </button>
-              </form>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-green-600">✅ 处理完成</h3>
-                  <button
-                    onClick={handleReset}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-                  >
-                    处理新链接
-                  </button>
-                </div>
+                  🚀 ShareX 一键转发
+                </a>
                 
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-medium mb-2">{article.title}</h4>
-                  {article.description && (
-                    <p className="text-gray-600 text-sm mb-3">{article.description}</p>
-                  )}
-                  {saved && (
-                    <div className="flex space-x-3">
-                      <a
-                        href={saved.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                      >
-                        查看文章
-                      </a>
-                      <Link
-                        href={`/${session.user?.username || 'user'}`}
-                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm"
-                      >
-                        我的文章
-                      </Link>
-                    </div>
-                  )}
+                <div className="text-sm text-gray-600">
+                  ← 拖拽到书签栏
                 </div>
               </div>
+              
+              <div className="mt-3 text-xs text-orange-600 bg-orange-100 p-2 rounded">
+                💡 使用说明：将按钮拖拽到浏览器书签栏，在任意文章页面点击书签即可快速转发
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 主要功能区域 */}
+        {session && !article && (
+          <div className="mb-6">
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                {error}
+              </div>
             )}
+            <ArticleForm 
+              onSubmit={handleArticleSubmit} 
+              loading={loading}
+              initialUrl={initialUrl}
+            />
           </div>
         )}
 
-        {/* Quick Links */}
+        {/* 处理结果 */}
+        {session && article && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-green-600">✅ 文章处理完成</h3>
+              <button
+                onClick={handleReset}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+              >
+                处理新文章
+              </button>
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-medium mb-2">{article.title}</h4>
+              {article.description && (
+                <p className="text-gray-600 text-sm mb-3">{article.description}</p>
+              )}
+              {saved && (
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href={saved.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                  >
+                    📖 查看文章
+                  </a>
+                  <Link
+                    href={`/${session.user?.username || 'user'}`}
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                  >
+                    📚 我的文章
+                  </Link>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(saved.url);
+                      alert('链接已复制到剪贴板');
+                    }}
+                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm"
+                  >
+                    📋 复制链接
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 游客功能介绍 */}
+        {!session && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4">功能特色</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex items-start space-x-3">
+                <div className="text-2xl">📄</div>
+                <div>
+                  <h3 className="font-medium mb-2">智能文章抓取</h3>
+                  <p className="text-sm text-gray-600">一键抓取网络文章内容，自动格式化排版，保持原文结构</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="text-2xl">🚀</div>
+                <div>
+                  <h3 className="font-medium mb-2">营销推广定制</h3>
+                  <p className="text-sm text-gray-600">添加品牌Logo、联系方式，每篇文章都是您的营销工具</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="text-2xl">🔖</div>
+                <div>
+                  <h3 className="font-medium mb-2">书签一键转发</h3>
+                  <p className="text-sm text-gray-600">浏览器书签工具，在任意网页一键转发，高效便捷</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-3">
+                <div className="text-2xl">💎</div>
+                <div>
+                  <h3 className="font-medium mb-2">VIP高级功能</h3>
+                  <p className="text-sm text-gray-600">无限制处理，长图生成，高级定制，专业营销利器</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 快捷链接 */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Link href="/subscription/pricing" className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition-shadow">
             <div className="text-2xl mb-2">💎</div>
             <div className="font-medium text-gray-900">VIP订阅</div>
             <div className="text-sm text-gray-500">解锁高级功能</div>
-          </Link>
-          
-          <Link href="/profile" className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition-shadow">
-            <div className="text-2xl mb-2">👤</div>
-            <div className="font-medium text-gray-900">个人资料</div>
-            <div className="text-sm text-gray-500">管理账户信息</div>
           </Link>
           
           <Link href="/contact" className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition-shadow">
@@ -267,10 +344,16 @@ export default function Home() {
             <div className="text-sm text-gray-500">获取帮助支持</div>
           </Link>
           
-          <Link href="/admin" className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition-shadow">
-            <div className="text-2xl mb-2">⚙️</div>
-            <div className="font-medium text-gray-900">管理后台</div>
-            <div className="text-sm text-gray-500">系统管理</div>
+          <Link href="/privacy" className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition-shadow">
+            <div className="text-2xl mb-2">🛡️</div>
+            <div className="font-medium text-gray-900">隐私政策</div>
+            <div className="text-sm text-gray-500">了解数据保护</div>
+          </Link>
+          
+          <Link href="/terms" className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition-shadow">
+            <div className="text-2xl mb-2">📋</div>
+            <div className="font-medium text-gray-900">服务条款</div>
+            <div className="text-sm text-gray-500">使用规则说明</div>
           </Link>
         </div>
       </div>
