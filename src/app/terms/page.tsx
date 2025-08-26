@@ -1,10 +1,10 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+
+
 
 export default function TermsOfServicePage() {
-  const t = useTranslations();
+  
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -19,7 +19,7 @@ export default function TermsOfServicePage() {
                 className="h-8 w-auto"
               />
             </a>
-            <LanguageSwitcher />
+            <a href="/" className="text-blue-600 hover:text-blue-800">u2190 u8fd4u56deu9996u9875</a>
           </div>
         </div>
       </header>
@@ -27,7 +27,7 @@ export default function TermsOfServicePage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-sm p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {t('legal.termsOfService')}
+            静态文本
           </h1>
           
           <p className="text-gray-600 mb-8">
@@ -194,7 +194,7 @@ export default function TermsOfServicePage() {
               href="/" 
               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
-              ← {t('common.back')} to {t('footer.company')}
+              ← 静态文本 to 静态文本
             </a>
           </div>
         </div>
