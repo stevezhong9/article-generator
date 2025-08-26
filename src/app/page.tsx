@@ -6,7 +6,7 @@ import Logo from '@/components/Logo';
 import Link from 'next/link';
 import ArticleForm from '@/components/ArticleForm';
 import { MarketingData } from '@/components/MarketingInfo';
-import { GoogleAuthButton } from '@/components/GoogleLoginModal';
+import SimpleGoogleLogin from '@/components/SimpleGoogleLogin';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -317,7 +317,7 @@ export default function Home() {
             <div className="lg:col-span-1">
               {/* User Authentication */}
               <div className="mb-4">
-                <GoogleAuthButton
+                <SimpleGoogleLogin
                   onSuccess={() => {
                     console.log('登录成功');
                     setError(null);
@@ -325,9 +325,6 @@ export default function Home() {
                   onError={(error) => {
                     console.error('登录失败:', error);
                     setError(error);
-                  }}
-                  onLogout={() => {
-                    console.log('已退出登录');
                   }}
                   callbackUrl="/"
                   showUserInfo={true}
