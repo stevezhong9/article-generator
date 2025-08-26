@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 
 export interface MarketingData {
   logo?: string;
@@ -22,6 +23,10 @@ export default function MarketingInfo({ onUpdate, initialCollapsed = true, initi
   const [logoPreview, setLogoPreview] = useState<string>(initialData.logo || '');
 
   // 从 localStorage 加载已保存的营销信息，或使用初始数据
+  const handleUpdate = useCallback((data: MarketingData) => {
+    onUpdate(data);
+  }, [onUpdate]);
+  
   useEffect(() => {
     let finalData = { ...initialData };
     
@@ -49,9 +54,9 @@ export default function MarketingInfo({ onUpdate, initialCollapsed = true, initi
       }
       
       // 通知父组件
-      onUpdate(finalData);
+      handleUpdate(finalData);
     }
-  }, [initialData]); // 移除 onUpdate 函数依赖避免无限循环
+  }, [initialData, handleUpdate]);
 
   const handleInputChange = (field: keyof MarketingData, value: string) => {
     const newData = { ...formData, [field]: value };
@@ -61,7 +66,7 @@ export default function MarketingInfo({ onUpdate, initialCollapsed = true, initi
     localStorage.setItem('marketing-info', JSON.stringify(newData));
     
     // 通知父组件
-    onUpdate(newData);
+    handleUpdate(newData);
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,10 +157,12 @@ export default function MarketingInfo({ onUpdate, initialCollapsed = true, initi
                 
                 {logoPreview && (
                   <div className="relative">
-                    <img 
-                      src={logoPreview} 
-                      alt="Logo预览" 
-                      className="w-16 h-16 object-contain border border-gray-200 rounded-md bg-white"
+                    <Image
+                      src={logoPreview}
+                      alt="Logo预览"
+                      width={64}
+                      height={64}
+                      className="object-contain border border-gray-200 rounded-md bg-white"
                     />
                     <button
                       type="button"

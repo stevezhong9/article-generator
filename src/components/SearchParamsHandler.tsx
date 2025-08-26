@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { MarketingData } from './MarketingInfo';
 
 interface SearchParamsHandlerProps {
@@ -17,12 +17,24 @@ export default function SearchParamsHandler({
 }: SearchParamsHandlerProps) {
   const searchParams = useSearchParams();
 
+  const handleUrlParam = useCallback((url: string) => {
+    onUrlParam(url);
+  }, [onUrlParam]);
+
+  const handleMarketingData = useCallback((data: MarketingData) => {
+    onMarketingData(data);
+  }, [onMarketingData]);
+
+  const handleAutoStart = useCallback((url: string, marketingData: MarketingData) => {
+    onAutoStart(url, marketingData);
+  }, [onAutoStart]);
+
   useEffect(() => {
     if (searchParams) {
       // 检查URL参数中的文章URL
       const paramUrl = searchParams.get('url');
       if (paramUrl) {
-        onUrlParam(paramUrl);
+        handleUrlParam(paramUrl);
       }
 
       // 检查营销数据参数
@@ -40,7 +52,7 @@ export default function SearchParamsHandler({
       if (logo) marketingData.logo = logo;
 
       if (Object.keys(marketingData).length > 0) {
-        onMarketingData(marketingData);
+        handleMarketingData(marketingData);
       }
 
       // 如果有URL参数且所有必要信息都有，可以自动开始处理
@@ -48,11 +60,11 @@ export default function SearchParamsHandler({
       if (paramUrl && autoStart) {
         // 延迟一点时间让组件完全初始化
         setTimeout(() => {
-          onAutoStart(paramUrl, marketingData);
+          handleAutoStart(paramUrl, marketingData);
         }, 1000);
       }
     }
-  }, [searchParams]); // 移除函数依赖避免无限循环
+  }, [searchParams, handleUrlParam, handleMarketingData, handleAutoStart]);
 
   return null; // 这是一个逻辑组件，不渲染任何UI
 }

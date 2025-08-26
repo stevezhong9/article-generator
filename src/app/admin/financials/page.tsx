@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface FinancialStats {
   totalRevenue: number;
@@ -50,20 +51,7 @@ export default function AdminFinancialsPage() {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('month');
 
-  useEffect(() => {
-    if (status === 'loading') return;
-    
-    if (!session) {
-      router.push('/');
-      return;
-    }
-
-    // 权限检查由服务端API处理
-
-    loadFinancialStats();
-  }, [session, status, router, period]);
-
-  const loadFinancialStats = async () => {
+  const loadFinancialStats = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/admin/financials?period=${period}`);
@@ -77,7 +65,20 @@ export default function AdminFinancialsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
+
+  useEffect(() => {
+    if (status === 'loading') return;
+    
+    if (!session) {
+      router.push('/');
+      return;
+    }
+
+    // 权限检查由服务端API处理
+
+    loadFinancialStats();
+  }, [session, status, router, period, loadFinancialStats]);
 
   if (status === 'loading' || !session) {
     return (
@@ -112,10 +113,12 @@ export default function AdminFinancialsPage() {
                 <option value="month">本月</option>
                 <option value="year">本年</option>
               </select>
-              <img
-                src={session.user?.image || ''}
-                alt={session.user?.name || ''}
-                className="w-8 h-8 rounded-full"
+              <Image
+                src={session.user?.image || '/default-avatar.png'}
+                alt={session.user?.name || 'User avatar'}
+                width={32}
+                height={32}
+                className="rounded-full"
               />
               <span className="text-sm text-gray-700">{session.user?.name}</span>
             </div>

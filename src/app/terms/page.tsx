@@ -1,7 +1,7 @@
 'use client';
 
-
-
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function TermsOfServicePage() {
   
@@ -12,14 +12,16 @@ export default function TermsOfServicePage() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <a href="/" className="flex items-center space-x-2">
-              <img 
-                src="/logo.png" 
-                alt="ShareX AI Logo" 
+            <Link href="/" className="flex items-center space-x-2">
+              <Image
+                src="/logo.png"
+                alt="ShareX AI Logo"
+                width={100}
+                height={32}
                 className="h-8 w-auto"
               />
-            </a>
-            <a href="/" className="text-blue-600 hover:text-blue-800">u2190 u8fd4u56deu9996u9875</a>
+            </Link>
+            <Link href="/" className="text-blue-600 hover:text-blue-800">u2190 u8fd4u56deu9996u9875</Link>
           </div>
         </div>
       </header>
@@ -190,12 +192,12 @@ export default function TermsOfServicePage() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <a 
+            <Link 
               href="/" 
               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
               ← 静态文本 to 静态文本
-            </a>
+            </Link>
           </div>
         </div>
       </div>

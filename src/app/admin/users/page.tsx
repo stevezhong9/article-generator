@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { UserProfile } from '@/lib/supabase';
@@ -16,20 +16,7 @@ export default function AdminUsersPage() {
   const [totalUsers, setTotalUsers] = useState(0);
   const pageSize = 20;
 
-  useEffect(() => {
-    if (status === 'loading') return;
-    
-    if (!session) {
-      router.push('/');
-      return;
-    }
-
-    // 权限检查由服务端API处理
-
-    loadUsers();
-  }, [session, status, router, currentPage, search]);
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/admin/users?page=${currentPage}&pageSize=${pageSize}&search=${encodeURIComponent(search)}`);
@@ -45,7 +32,20 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize, search]);
+
+  useEffect(() => {
+    if (status === 'loading') return;
+    
+    if (!session) {
+      router.push('/');
+      return;
+    }
+
+    // 权限检查由服务端API处理
+
+    loadUsers();
+  }, [session, status, router, currentPage, search, loadUsers]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

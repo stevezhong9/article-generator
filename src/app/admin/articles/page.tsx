@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Article } from '@/lib/supabase';
 
 export default function AdminArticlesPage() {
@@ -17,20 +18,7 @@ export default function AdminArticlesPage() {
   const [totalArticles, setTotalArticles] = useState(0);
   const pageSize = 20;
 
-  useEffect(() => {
-    if (status === 'loading') return;
-    
-    if (!session) {
-      router.push('/');
-      return;
-    }
-
-    // 权限检查由服务端API处理
-
-    loadArticles();
-  }, [session, status, router, currentPage, search]);
-
-  const loadArticles = async () => {
+  const loadArticles = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/admin/articles?page=${currentPage}&pageSize=${pageSize}&search=${encodeURIComponent(search)}`);
@@ -46,7 +34,20 @@ export default function AdminArticlesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, search]);
+
+  useEffect(() => {
+    if (status === 'loading') return;
+    
+    if (!session) {
+      router.push('/');
+      return;
+    }
+
+    // 权限检查由服务端API处理
+
+    loadArticles();
+  }, [session, status, router, loadArticles]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,16 +73,18 @@ export default function AdminArticlesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <a href="/admin" className="text-blue-600 hover:text-blue-800 mr-4">
+              <Link href="/admin" className="text-blue-600 hover:text-blue-800 mr-4">
                 ← 返回概览
-              </a>
+              </Link>
               <h1 className="text-xl font-semibold text-gray-900">文章管理</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <img
-                src={session.user?.image || ''}
-                alt={session.user?.name || ''}
-                className="w-8 h-8 rounded-full"
+              <Image
+                src={session.user?.image || '/default-avatar.png'}
+                alt={session.user?.name || 'User avatar'}
+                width={32}
+                height={32}
+                className="rounded-full"
               />
               <span className="text-sm text-gray-700">{session.user?.name}</span>
             </div>

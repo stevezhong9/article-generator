@@ -64,7 +64,7 @@ export interface Order {
   status: 'pending' | 'paid' | 'cancelled' | 'refunded';
   stripe_payment_intent_id: string | null;
   stripe_session_id: string | null;
-  metadata: any;
+  metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -634,12 +634,12 @@ export class ArticleSupabase {
   }
 
   // 更新订单状态
-  static async updateOrderStatus(orderId: number, status: string, metadata?: any): Promise<boolean> {
+  static async updateOrderStatus(orderId: number, status: string, metadata?: Record<string, unknown>): Promise<boolean> {
     if (!supabase) {
       return false;
     }
 
-    const updateData: any = {
+    const updateData: Partial<Order> = {
       status,
       updated_at: new Date().toISOString()
     };
@@ -747,7 +747,7 @@ export class ArticleSupabase {
   }
 
   // 获取订单列表（分页）
-  static async getOrders(page: number = 1, pageSize: number = 20, search?: string, status?: string): Promise<{orders: any[], total: number}> {
+  static async getOrders(page: number = 1, pageSize: number = 20, search?: string, status?: string): Promise<{orders: Order[], total: number}> {
     if (!supabase) {
       return { orders: [], total: 0 };
     }
@@ -852,7 +852,7 @@ export class ArticleSupabase {
     totalOrders: number;
     periodOrders: number;
     averageOrderValue: number;
-    recentPayments: any[];
+    recentPayments: Order[];
     revenueChart: { date: string; revenue: number; orders: number }[];
     topPlans: { planName: string; revenue: number; orders: number }[];
   }> {
@@ -957,7 +957,7 @@ export class ArticleSupabase {
       // 计算套餐统计
       const planMap = new Map<string, { revenue: number; orders: number }>();
       planStats?.forEach(order => {
-        const planName = (order.subscription_plans as any)?.name || '未知套餐';
+        const planName = (order.subscription_plans as { name?: string })?.name || '未知套餐';
         const existing = planMap.get(planName) || { revenue: 0, orders: 0 };
         planMap.set(planName, {
           revenue: existing.revenue + order.amount_usd,

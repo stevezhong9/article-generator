@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import LongImageGenerator from '@/components/LongImageGenerator';
 import { MarketingData } from '@/components/MarketingInfo';
 import '@/styles/article.css';
@@ -92,7 +93,7 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
     loadParams();
   }, [params]);
 
-  const loadArticle = async () => {
+  const loadArticle = useCallback(async () => {
     try {
       console.log('从API获取用户文章:', username, slug);
       const response = await fetch(`/api/articles/${username}/${slug}`);
@@ -138,14 +139,14 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [username, slug]);
 
   useEffect(() => {
     if (!username || !slug) return;
 
     console.log('访问用户文章页面，username:', username, 'slug:', slug);
     loadArticle();
-  }, [username, slug]);
+  }, [username, slug, loadArticle]);
 
   // 生成结构化数据
   const generateStructuredData = useCallback(() => {
@@ -337,12 +338,12 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               {userProfile.avatar_url && (
-                <img
+                <Image
                   src={userProfile.avatar_url}
                   alt={userProfile.name}
+                  width={48}
+                  height={48}
                   style={{
-                    width: '48px',
-                    height: '48px',
                     borderRadius: '50%',
                     marginRight: '12px'
                   }}
@@ -402,12 +403,12 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
           }}>
             {/* Logo */}
             {article.marketingData.logo && (
-              <img 
-                src={article.marketingData.logo} 
-                alt="Brand Logo" 
+              <Image
+                src={article.marketingData.logo}
+                alt="Brand Logo"
+                width={200}
+                height={60}
                 style={{
-                  height: '60px',
-                  maxWidth: '200px',
                   objectFit: 'contain',
                   marginBottom: '12px',
                   display: 'block',

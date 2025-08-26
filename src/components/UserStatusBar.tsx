@@ -5,7 +5,11 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 interface UserStatus {
-  subscription: any;
+  subscription: {
+    planName: string;
+    isActive: boolean;
+    expiresAt?: string;
+  } | null;
   isVip: boolean;
   canCreate: boolean;
   dailyUsage: number;

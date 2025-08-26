@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface OrderData {
   id: number;
@@ -53,20 +54,7 @@ export default function AdminOrdersPage() {
   const [totalOrders, setTotalOrders] = useState(0);
   const pageSize = 20;
 
-  useEffect(() => {
-    if (status === 'loading') return;
-    
-    if (!session) {
-      router.push('/');
-      return;
-    }
-
-    // 权限检查由服务端API处理
-
-    loadOrders();
-  }, [session, status, router, currentPage, search, statusFilter]);
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -90,7 +78,20 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize, search, statusFilter]);
+
+  useEffect(() => {
+    if (status === 'loading') return;
+    
+    if (!session) {
+      router.push('/');
+      return;
+    }
+
+    // 权限检查由服务端API处理
+
+    loadOrders();
+  }, [session, status, router, currentPage, search, statusFilter, loadOrders]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,10 +123,12 @@ export default function AdminOrdersPage() {
               <h1 className="text-xl font-semibold text-gray-900">订单管理</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <img
-                src={session.user?.image || ''}
-                alt={session.user?.name || ''}
-                className="w-8 h-8 rounded-full"
+              <Image
+                src={session.user?.image || '/default-avatar.png'}
+                alt={session.user?.name || 'User avatar'}
+                width={32}
+                height={32}
+                className="rounded-full"
               />
               <span className="text-sm text-gray-700">{session.user?.name}</span>
             </div>

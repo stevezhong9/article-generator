@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -59,14 +61,16 @@ export default function ContactPage() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <a href="/" className="flex items-center space-x-2">
-              <img 
-                src="/logo.png" 
-                alt="ShareX AI Logo" 
+            <Link href="/" className="flex items-center space-x-2">
+              <Image
+                src="/logo.png"
+                alt="ShareX AI Logo"
+                width={100}
+                height={32}
                 className="h-8 w-auto"
               />
-            </a>
-            <a href="/" className="text-blue-600 hover:text-blue-800">← 返回首页</a>
+            </Link>
+            <Link href="/" className="text-blue-600 hover:text-blue-800">← 返回首页</Link>
           </div>
         </div>
       </header>
@@ -276,8 +280,8 @@ export default function ContactPage() {
 
                   <p className="mt-4 text-sm text-gray-600 text-center">
                     By submitting this form, you agree to our{' '}
-                    <a href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</a> and{' '}
-                    <a href="/terms" className="text-blue-600 hover:underline">Terms of Service</a>.
+                    <Link href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link> and{' '}
+                    <Link href="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>.
                   </p>
                 </form>
               )}
@@ -285,12 +289,12 @@ export default function ContactPage() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <a 
+            <Link 
               href="/" 
               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
               ← 返回 ShareX AI
-            </a>
+            </Link>
           </div>
         </div>
       </div>

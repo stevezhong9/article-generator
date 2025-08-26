@@ -42,7 +42,7 @@ export interface Order {
   status: 'pending' | 'paid' | 'cancelled' | 'refunded';
   stripe_payment_intent_id: string | null;
   stripe_session_id: string | null;
-  metadata: any;
+  metadata: Record<string, unknown>;
   created_at: string;
 }
 
