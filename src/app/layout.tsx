@@ -7,28 +7,28 @@ import "@/styles/brand-colors.css";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: '文章转载工具 - 一键转载网络文章，生成精美页面',
-  description: '专业的文章转载工具，支持一键抓取网络文章内容，生成精美的文章页面，支持长图分享和社交媒体推广。',
-  keywords: ['文章转载', '内容分享', '长图生成', '社交媒体', '文章抓取', '内容营销'],
-  authors: [{ name: '文章转载工具团队' }],
-  creator: '文章转载工具',
-  publisher: '文章转载工具',
+  title: 'SharetoX - AI超级分享平台 | 一键转载网络文章，生成精美页面',
+  description: 'SharetoX是专业的AI超级分享平台，支持一键抓取网络文章内容，生成精美的文章页面，支持长图分享和社交媒体推广。',
+  keywords: ['SharetoX', '文章转载', '内容分享', '长图生成', '社交媒体', '文章抓取', '内容营销', 'AI分享平台'],
+  authors: [{ name: 'SharetoX团队' }],
+  creator: 'SharetoX',
+  publisher: 'SharetoX',
   
   // Open Graph
   openGraph: {
     type: 'website',
     locale: 'zh_CN',
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://your-domain.vercel.app',
-    siteName: '文章转载工具',
-    title: '文章转载工具 - 一键转载网络文章，生成精美页面',
-    description: '专业的文章转载工具，支持一键抓取网络文章内容，生成精美的文章页面，支持长图分享和社交媒体推广。',
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://sharetox.com',
+    siteName: 'SharetoX - AI超级分享平台',
+    title: 'SharetoX - AI超级分享平台 | 一键转载网络文章，生成精美页面',
+    description: 'SharetoX是专业的AI超级分享平台，支持一键抓取网络文章内容，生成精美的文章页面，支持长图分享和社交媒体推广。',
   },
 
   // Twitter Card
   twitter: {
     card: 'summary_large_image',
-    title: '文章转载工具 - 一键转载网络文章，生成精美页面',
-    description: '专业的文章转载工具，支持一键抓取网络文章内容，生成精美的文章页面，支持长图分享和社交媒体推广。',
+    title: 'SharetoX - AI超级分享平台 | 一键转载网络文章，生成精美页面',
+    description: 'SharetoX是专业的AI超级分享平台，支持一键抓取网络文章内容，生成精美的文章页面，支持长图分享和社交媒体推广。',
   },
 
   // 其他SEO设置
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   },
 
   // App 相关
-  applicationName: '文章转载工具',
+  applicationName: 'SharetoX',
   category: '效率工具',
 };
 
@@ -74,8 +74,8 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebApplication',
-              name: '文章转载工具',
-              description: '专业的文章转载工具，支持一键抓取网络文章内容，生成精美的文章页面。',
+              name: 'SharetoX',
+              description: 'SharetoX是专业的AI超级分享平台，支持一键抓取网络文章内容，生成精美的文章页面。',
               url: process.env.NEXT_PUBLIC_BASE_URL || 'https://your-domain.vercel.app',
               applicationCategory: 'UtilitiesApplication',
               operatingSystem: 'Web Browser',
@@ -87,7 +87,7 @@ export default function RootLayout({
               },
               author: {
                 '@type': 'Organization',
-                name: '文章转载工具团队'
+                name: 'SharetoX团队'
               },
               inLanguage: 'zh-CN',
               datePublished: '2024-01-01',

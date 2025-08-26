@@ -249,10 +249,10 @@ export default function TestPage() {
                       className="inline-flex items-center px-4 py-3 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 cursor-move select-none shadow-lg transform hover:scale-105 transition-all duration-200"
                       draggable="true"
                       onDragStart={(e) => {
-                        e.dataTransfer.setData('text/html', `<a href="${generateBookmarklet()}">ShareX 一键转发</a>`);
+                        e.dataTransfer.setData('text/html', `<a href="${generateBookmarklet()}">SharetoX 一键转发</a>`);
                       }}
                     >
-                      🚀 ShareX 一键转发
+                      🚀 SharetoX 一键转发
                     </a>
                     
                     <div className="text-xs text-orange-600 bg-orange-100 p-2 rounded text-center">

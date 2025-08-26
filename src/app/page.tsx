@@ -26,6 +26,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<{ path: string; url: string } | null>(null);
   const [initialUrl, setInitialUrl] = useState('');
+  const [savedFormData, setSavedFormData] = useState<any>(null);
 
   // 检查URL参数，用于书签工具
   useEffect(() => {
@@ -36,8 +37,54 @@ export default function Home() {
     }
   }, []);
 
+  // 用户登录后自动恢复表单数据
+  useEffect(() => {
+    if (session && status !== 'loading') {
+      const savedData = restoreFormData();
+      if (savedData) {
+        // 如果有保存的数据，设置到状态中供表单使用
+        console.log('发现已保存的表单数据:', savedData);
+        setSavedFormData(savedData);
+        setError(`✅ 欢迎回来！我们为您恢复了之前填写的表单数据，您可以继续完成提交。`);
+      }
+    }
+  }, [session, status]);
+
+  // 保存表单数据到localStorage
+  const saveFormData = (url: string, marketingData?: MarketingData) => {
+    const formData = { url, marketingData };
+    localStorage.setItem('shareto_form_data', JSON.stringify(formData));
+  };
+
+  // 从localStorage恢复表单数据
+  const restoreFormData = () => {
+    const saved = localStorage.getItem('shareto_form_data');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('恢复表单数据失败:', error);
+      }
+    }
+    return null;
+  };
+
+  // 清除保存的表单数据
+  const clearFormData = () => {
+    localStorage.removeItem('shareto_form_data');
+  };
+
   // 处理文章提交
   const handleArticleSubmit = async (url: string, marketingData?: MarketingData) => {
+    // 检查登录状态
+    if (!session) {
+      // 保存表单数据
+      saveFormData(url, marketingData);
+      // 提示用户登录
+      setError('请先登录后再提交。您的表单数据已保存，登录后将自动恢复。');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     
@@ -52,6 +99,10 @@ export default function Home() {
       
       if (result.success) {
         setArticle(result.data);
+        // 清除保存的表单数据（成功提交后）
+        clearFormData();
+        setSavedFormData(null);
+        
         // 自动保存，包含营销信息
         setTimeout(async () => {
           try {
@@ -91,6 +142,8 @@ export default function Home() {
     setArticle(null);
     setError(null);
     setSaved(null);
+    setSavedFormData(null);
+    clearFormData();
   };
 
   // 生成书签工具代码
@@ -162,7 +215,7 @@ export default function Home() {
         {/* Login prompt */}
         {!session && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 text-center">
-            <h2 className="text-xl font-semibold mb-3">欢迎使用 ShareX AI</h2>
+            <h2 className="text-xl font-semibold mb-3">欢迎使用 SharetoX</h2>
             <p className="text-gray-600 mb-4">请先登录以使用文章转载功能</p>
             <button
               onClick={async () => {
@@ -199,7 +252,7 @@ export default function Home() {
         )}
 
         {/* 主要功能区域 - 一键转发表单 */}
-        {session && !article && (
+        {!article && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             {/* 左侧：一键转发表单 */}
             <div className="lg:col-span-2">
@@ -237,7 +290,7 @@ export default function Home() {
                     <input
                       type="url"
                       name="url"
-                      defaultValue={initialUrl}
+                      defaultValue={savedFormData?.url || initialUrl}
                       placeholder="粘贴要转发的文章URL，如：https://example.com/article"
                       required
                       disabled={loading}
@@ -259,6 +312,7 @@ export default function Home() {
                         <input
                           type="url"
                           name="logo"
+                          defaultValue={savedFormData?.marketingData?.logo || ''}
                           placeholder="https://example.com/logo.png"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                         />
@@ -269,6 +323,7 @@ export default function Home() {
                         <input
                           type="text"
                           name="companyName"
+                          defaultValue={savedFormData?.marketingData?.companyName || ''}
                           placeholder="您的品牌名称"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                         />
@@ -279,6 +334,7 @@ export default function Home() {
                         <input
                           type="tel"
                           name="phone"
+                          defaultValue={savedFormData?.marketingData?.phone || ''}
                           placeholder="400-123-4567"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                         />
@@ -289,6 +345,7 @@ export default function Home() {
                         <input
                           type="email"
                           name="email"
+                          defaultValue={savedFormData?.marketingData?.email || ''}
                           placeholder="contact@example.com"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                         />
@@ -334,10 +391,10 @@ export default function Home() {
                       className="inline-flex items-center px-4 py-3 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 cursor-move select-none shadow-lg transform hover:scale-105 transition-all duration-200"
                       draggable="true"
                       onDragStart={(e) => {
-                        e.dataTransfer.setData('text/html', `<a href="${generateBookmarklet()}">ShareX 一键转发</a>`);
+                        e.dataTransfer.setData('text/html', `<a href="${generateBookmarklet()}">SharetoX 一键转发</a>`);
                       }}
                     >
-                      🚀 ShareX 一键转发
+                      🚀 SharetoX 一键转发
                     </a>
                     
                     <div className="text-xs text-orange-600 bg-orange-100 p-2 rounded text-center">
@@ -351,7 +408,7 @@ export default function Home() {
         )}
 
         {/* 处理结果 */}
-        {session && article && (
+        {article && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-green-600">✅ 文章处理完成</h3>
@@ -398,6 +455,7 @@ export default function Home() {
             </div>
           </div>
         )}
+
 
         {/* 游客功能介绍 */}
         {!session && (

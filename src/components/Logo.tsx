@@ -32,7 +32,7 @@ export default function Logo({
       {!imageError ? (
         <Image 
           src="/logo.png" 
-          alt="ShareX AI - AI超级分享平台" 
+          alt="SharetoX - AI超级分享平台" 
           width={300}
           height={75}
           priority={priority}
@@ -45,7 +45,7 @@ export default function Logo({
         />
       ) : (
         <div className={`${sizeClasses[size]} w-32 bg-gradient-to-r from-blue-600 to-purple-600 rounded flex items-center justify-center text-white font-bold`}>
-          ShareX AI
+          SharetoX
         </div>
       )}
     </div>

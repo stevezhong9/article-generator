@@ -95,7 +95,7 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
         if (navigator.canShare({ files: [file] })) {
           await navigator.share({
             title: article.title,
-            text: `📄 "${article.title}" - 通过文章转载工具生成`,
+            text: `📄 "${article.title}" - 通过SharetoX生成`,
             url: shareableURL,
             files: [file]
           });
@@ -109,7 +109,7 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
     } catch (error) {
       console.error('分享失败:', error);
       // 回退到简单文本分享
-      const text = encodeURIComponent(`📄 "${article.title}" - 通过文章转载工具生成 ${window.location.origin}${article.url}`);
+      const text = encodeURIComponent(`📄 "${article.title}" - 通过SharetoX生成 ${window.location.origin}${article.url}`);
       const twitterUrl = `https://twitter.com/intent/tweet?text=${text}`;
       window.open(twitterUrl, '_blank', 'width=600,height=400');
     }
@@ -129,7 +129,7 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
       // 回退到简单链接分享
       const url = encodeURIComponent(`${window.location.origin}${article.url}`);
       const title = encodeURIComponent(article.title);
-      const summary = encodeURIComponent('通过文章转载工具生成的精美长图');
+      const summary = encodeURIComponent('通过SharetoX生成的精美长图');
       
       const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}&summary=${summary}`;
       window.open(linkedInUrl, '_blank', 'width=600,height=400');
@@ -519,7 +519,7 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
             >
               <span>📅 {new Date(article.savedAt).toLocaleDateString('zh-CN')}</span>
               <span>•</span>
-              <span>📄 {article.marketingData?.companyName || '文章转载工具'}</span>
+              <span>📄 {article.marketingData?.companyName || 'SharetoX'}</span>
             </div>
           </div>
 
@@ -744,7 +744,7 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
               opacity: 0.5
             }}
           >
-            <p>由{article.marketingData?.companyName || '文章转载工具'}生成 • {typeof window !== 'undefined' ? window.location.origin : ''}</p>
+            <p>由{article.marketingData?.companyName || 'SharetoX'}生成 • {typeof window !== 'undefined' ? window.location.origin : ''}</p>
           </div>
         </div>
       </div>

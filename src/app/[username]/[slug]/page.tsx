@@ -166,7 +166,7 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
       },
       publisher: {
         '@type': 'Organization',
-        name: article.marketingData?.companyName || userProfile?.name || '文章转载工具',
+        name: article.marketingData?.companyName || userProfile?.name || 'SharetoX',
         logo: article.marketingData?.logo ? {
           '@type': 'ImageObject',
           url: article.marketingData.logo

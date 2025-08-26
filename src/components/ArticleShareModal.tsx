@@ -417,7 +417,7 @@ export default function ArticleShareModal({ isOpen, onClose, article }: ArticleS
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '14px', opacity: 0.75, gap: '16px' }}>
               <span>📅 {new Date().toLocaleDateString('zh-CN')}</span>
               <span>•</span>
-              <span>📄 {article.marketingData?.companyName || '文章转载工具'}</span>
+              <span>📄 {article.marketingData?.companyName || 'SharetoX'}</span>
             </div>
           </div>
 
@@ -558,7 +558,7 @@ export default function ArticleShareModal({ isOpen, onClose, article }: ArticleS
 
           {/* 底部标识 */}
           <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid', borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb', textAlign: 'center', fontSize: '12px', opacity: 0.5 }}>
-            <p>由{article.marketingData?.companyName || '文章转载工具'}生成 • {typeof window !== 'undefined' ? window.location.origin : ''}</p>
+            <p>由{article.marketingData?.companyName || 'SharetoX'}生成 • {typeof window !== 'undefined' ? window.location.origin : ''}</p>
           </div>
         </div>
       </div>
