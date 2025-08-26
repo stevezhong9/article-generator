@@ -7,6 +7,29 @@ import RecentArticles from '@/components/RecentArticles';
 import { MarketingData } from '@/components/MarketingInfo';
 import '@/styles/article.css';
 
+// Add inline animation styles for loading spinner
+const loadingSpinnerStyles = `
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+// Insert styles into head if not already there
+if (typeof document !== 'undefined') {
+  const existingStyles = document.getElementById('loading-spinner-styles');
+  if (!existingStyles) {
+    const styleElement = document.createElement('style');
+    styleElement.id = 'loading-spinner-styles';
+    styleElement.innerHTML = loadingSpinnerStyles;
+    document.head.appendChild(styleElement);
+  }
+}
+
 interface ArticlePageProps {
   params: Promise<{
     slug: string;
@@ -273,11 +296,19 @@ export default function ArticlePage({ params }: ArticlePageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">正在加载文章...</p>
+      <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa', padding: '32px 0' }}>
+        <div style={{ maxWidth: '1024px', margin: '0 auto', padding: '0 16px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              animation: 'spin 1s linear infinite',
+              borderRadius: '50%',
+              height: '48px',
+              width: '48px',
+              border: '2px solid #e5e7eb',
+              borderBottomColor: '#2563eb',
+              margin: '0 auto'
+            }}></div>
+            <p style={{ marginTop: '16px', color: '#6b7280' }}>正在加载文章...</p>
           </div>
         </div>
       </div>
@@ -286,13 +317,28 @@ export default function ArticlePage({ params }: ArticlePageProps) {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">文章未找到</h1>
-          <p className="text-gray-600 mb-8">请检查链接是否正确，或者文章是否已被删除。</p>
+      <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa', padding: '32px 0' }}>
+        <div style={{ maxWidth: '1024px', margin: '0 auto', padding: '0 16px', textAlign: 'center' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', marginBottom: '16px' }}>文章未找到</h1>
+          <p style={{ color: '#6b7280', marginBottom: '32px' }}>请检查链接是否正确，或者文章是否已被删除。</p>
           <Link
             href="/"
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '8px 16px',
+              backgroundColor: '#2563eb',
+              color: '#ffffff',
+              borderRadius: '6px',
+              textDecoration: 'none',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#1d4ed8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#2563eb';
+            }}
           >
             返回首页
           </Link>
@@ -303,46 +349,106 @@ export default function ArticlePage({ params }: ArticlePageProps) {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
-      {/* 顶部品牌区域 */}
-      {article.marketingData?.logo && (
-        <div className="bg-white border-b border-gray-100">
-          <div className="max-w-3xl mx-auto px-4 py-4 text-center">
+      {/* 主要内容区域 */}
+      <div className="max-w-4xl mx-auto bg-white min-h-screen" style={{
+        borderRadius: '16px',
+        border: '2px solid #e5e7eb',
+        marginTop: '20px',
+        marginBottom: '20px',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+        overflow: 'hidden'
+      }}>
+        {/* 顶部品牌Logo区域 - 与长图模版一致 */}
+        {article.marketingData?.logo && (
+          <div style={{
+            textAlign: 'center',
+            padding: '32px 32px 24px',
+            borderBottom: '1px solid #e5e7eb',
+            backgroundColor: '#ffffff'
+          }}>
             <img 
               src={article.marketingData.logo} 
               alt="Brand Logo" 
-              className="h-12 mx-auto object-contain block"
+              style={{
+                height: '60px',
+                maxWidth: '200px',
+                objectFit: 'contain',
+                marginBottom: article.marketingData.companyName ? '12px' : '0',
+                display: 'block',
+                margin: '0 auto ' + (article.marketingData.companyName ? '12px' : '0') + ' auto'
+              }}
             />
             {article.marketingData.companyName && (
-              <div className="mt-2 text-sm text-gray-600">
+              <div style={{
+                fontSize: '16px',
+                color: '#6b7280',
+                fontWeight: '500'
+              }}>
                 {article.marketingData.companyName}
               </div>
             )}
           </div>
-        </div>
-      )}
-
-      {/* 主要内容区域 */}
-      <div className="max-w-3xl mx-auto bg-white min-h-screen">
-        {/* 标签切换栏 */}
-        <div className="sticky top-0 bg-white border-b border-gray-100 z-10">
-          <div className="flex">
+        )}
+        {/* 标签切换栏 - 与长图模版一致 */}
+        <div style={{
+          position: 'sticky',
+          top: '0',
+          backgroundColor: '#ffffff',
+          borderBottom: '1px solid #f3f4f6',
+          zIndex: 10
+        }}>
+          <div style={{ display: 'flex' }}>
             <button
               onClick={() => setActiveTab('article')}
-              className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
-                activeTab === 'article'
-                  ? 'text-black border-b-2 border-black bg-white'
-                  : 'text-gray-500 hover:text-gray-700 bg-gray-50'
-              }`}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                textAlign: 'center',
+                fontWeight: '500',
+                transition: 'all 0.2s',
+                color: activeTab === 'article' ? '#000000' : '#6b7280',
+                backgroundColor: activeTab === 'article' ? '#ffffff' : '#f9fafb',
+                borderBottom: activeTab === 'article' ? '2px solid #000000' : 'none',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== 'article') {
+                  e.currentTarget.style.color = '#374151';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== 'article') {
+                  e.currentTarget.style.color = '#6b7280';
+                }
+              }}
             >
               阅读文章
             </button>
             <button
               onClick={() => setActiveTab('longimage')}
-              className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
-                activeTab === 'longimage'
-                  ? 'text-black border-b-2 border-black bg-white'
-                  : 'text-gray-500 hover:text-gray-700 bg-gray-50'
-              }`}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                textAlign: 'center',
+                fontWeight: '500',
+                transition: 'all 0.2s',
+                color: activeTab === 'longimage' ? '#000000' : '#6b7280',
+                backgroundColor: activeTab === 'longimage' ? '#ffffff' : '#f9fafb',
+                borderBottom: activeTab === 'longimage' ? '2px solid #000000' : 'none',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== 'longimage') {
+                  e.currentTarget.style.color = '#374151';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== 'longimage') {
+                  e.currentTarget.style.color = '#6b7280';
+                }
+              }}
             >
               生成长图
             </button>
@@ -350,26 +456,52 @@ export default function ArticlePage({ params }: ArticlePageProps) {
         </div>
 
         {activeTab === 'article' ? (
-          <article className="px-6 py-8">
-            {/* 文章标题 */}
-            <header className="mb-8 text-center">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+          <article style={{ padding: '32px' }}>
+            {/* 文章标题 - 与长图模版一致的样式 */}
+            <header style={{
+              textAlign: 'center',
+              marginBottom: '32px',
+              borderBottom: '1px solid #e5e7eb',
+              paddingBottom: '24px'
+            }}>
+              <h1 style={{
+                fontSize: '36px',
+                fontWeight: 'bold',
+                marginBottom: '16px',
+                lineHeight: '1.2',
+                color: '#1f2937'
+              }}>
                 {article.title}
               </h1>
               
-              {/* 文章元信息 */}
-              <div className="flex flex-wrap justify-center items-center text-sm text-gray-500 gap-4">
+              {/* 文章元信息 - 与长图模版一致 */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                fontSize: '14px',
+                opacity: 0.75,
+                gap: '16px',
+                color: '#6b7280'
+              }}>
+                <span>📅 {new Date(article.savedAt).toLocaleDateString('zh-CN')}</span>
+                <span>•</span>
+                <span>📄 {article.marketingData?.companyName || '文章转载工具'}</span>
                 {article.author && (
-                  <span>{article.author}</span>
+                  <>
+                    <span>•</span>
+                    <span>✍️ {article.author}</span>
+                  </>
                 )}
-                {article.publishDate && (
-                  <span>{new Date(article.publishDate).toLocaleDateString('zh-CN')}</span>
-                )}
-                <span>{new Date(article.savedAt).toLocaleDateString('zh-CN')}</span>
               </div>
               
               {article.description && (
-                <p className="mt-4 text-gray-600 text-lg leading-relaxed">
+                <p style={{
+                  marginTop: '16px',
+                  fontSize: '18px',
+                  lineHeight: '1.6',
+                  color: '#4b5563'
+                }}>
                   {article.description}
                 </p>
               )}
@@ -381,21 +513,48 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
 
-            {/* 转载来源 */}
+            {/* 转载来源 - 与长图模版一致 */}
             {article.sourceUrl && (
-              <div className="mt-12 pt-6 border-t border-gray-100">
-                <div className="bg-gray-50 rounded-lg p-4 text-center">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">📄 转载来源</h4>
-                  <p className="text-sm text-gray-600 mb-2">
+              <div style={{
+                marginTop: '32px',
+                paddingTop: '24px',
+                borderTop: '1px solid #e5e7eb',
+                textAlign: 'center'
+              }}>
+                <div style={{
+                  backgroundColor: '#f9fafb',
+                  padding: '16px',
+                  borderRadius: '8px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <h4 style={{
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    marginBottom: '8px',
+                    color: '#374151'
+                  }}>
+                    📄 转载来源
+                  </h4>
+                  <p style={{
+                    fontSize: '12px',
+                    marginBottom: '8px',
+                    color: '#6b7280'
+                  }}>
                     本文转载自原作者，版权归原作者所有
                   </p>
-                  <div className="text-sm">
-                    <span className="text-gray-500">原文链接: </span>
+                  <div style={{ fontSize: '12px' }}>
+                    <span style={{ color: '#6b7280' }}>
+                      原文链接: 
+                    </span>
                     <a 
                       href={article.sourceUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline break-all"
+                      style={{ 
+                        color: '#007AFF',
+                        wordBreak: 'break-all',
+                        textDecoration: 'underline'
+                      }}
                     >
                       {article.sourceUrl}
                     </a>
@@ -404,82 +563,129 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               </div>
             )}
 
-            {/* 联系方式区域 */}
+            {/* 联系方式区域 - 与长图模版一致 */}
             {article.marketingData && (
-              <div className="mt-12 pt-8 border-t border-gray-100">
-                <div className="bg-gray-50 rounded-lg p-6 text-center">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">联系我们</h3>
+              <div style={{
+                marginTop: '32px',
+                paddingTop: '24px',
+                borderTop: '1px solid #e5e7eb',
+                textAlign: 'center'
+              }}>
+                <h3 style={{
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  marginBottom: '16px',
+                  color: '#1f2937'
+                }}>
+                  联系我们
+                </h3>
+                
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  fontSize: '14px',
+                  color: '#4b5563'
+                }}>
+                  {article.marketingData.website && (
+                    <div>
+                      <span style={{ fontWeight: '500' }}>官网: </span>
+                      <a 
+                        href={article.marketingData.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ color: '#007AFF', textDecoration: 'underline' }}
+                      >
+                        {article.marketingData.website}
+                      </a>
+                    </div>
+                  )}
                   
-                  <div className="space-y-3 text-sm text-gray-600">
-                    {article.marketingData.website && (
-                      <div>
-                        <span className="font-medium">官网: </span>
-                        <a 
-                          href={article.marketingData.website} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 underline"
-                        >
-                          {article.marketingData.website}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {(article.marketingData.email || article.marketingData.phone) && (
-                      <div className="flex justify-center gap-6">
-                        {article.marketingData.email && (
-                          <div>
-                            <span className="font-medium">邮箱: </span>
-                            <a 
-                              href={`mailto:${article.marketingData.email}`}
-                              className="text-blue-600 hover:text-blue-800"
-                            >
-                              {article.marketingData.email}
-                            </a>
-                          </div>
-                        )}
-                        
-                        {article.marketingData.phone && (
-                          <div>
-                            <span className="font-medium">电话: </span>
-                            <a 
-                              href={`tel:${article.marketingData.phone}`}
-                              className="text-blue-600 hover:text-blue-800"
-                            >
-                              {article.marketingData.phone}
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  {(article.marketingData.email || article.marketingData.phone) && (
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      gap: '24px',
+                      marginTop: '8px'
+                    }}>
+                      {article.marketingData.email && (
+                        <div>
+                          <span style={{ fontWeight: '500' }}>邮箱: </span>
+                          <a 
+                            href={`mailto:${article.marketingData.email}`}
+                            style={{ color: '#007AFF' }}
+                          >
+                            {article.marketingData.email}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {article.marketingData.phone && (
+                        <div>
+                          <span style={{ fontWeight: '500' }}>电话: </span>
+                          <a 
+                            href={`tel:${article.marketingData.phone}`}
+                            style={{ color: '#007AFF' }}
+                          >
+                            {article.marketingData.phone}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </article>
         ) : (
-          <div className="px-6 py-8">
+          <div style={{ padding: '32px' }}>
             <LongImageGenerator article={article} />
           </div>
         )}
 
         {/* 底部工具栏 */}
-        <div className="border-t border-gray-100 bg-white px-6 py-4">
-          <div className="flex justify-between items-center">
+        <div style={{
+          borderTop: '1px solid #e5e7eb',
+          backgroundColor: '#ffffff',
+          padding: '16px 32px'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
             <Link
               href="/"
-              className="text-gray-600 hover:text-gray-900 font-medium text-sm flex items-center"
+              style={{
+                color: '#6b7280',
+                fontWeight: '500',
+                fontSize: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                textDecoration: 'none'
+              }}
             >
               ← 返回首页
             </Link>
             
-            <div className="flex items-center space-x-4 text-sm">
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '16px',
+              fontSize: '14px'
+            }}>
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(article.markdown);
                   alert('内容已复制到剪贴板！');
                 }}
-                className="text-gray-600 hover:text-gray-900"
+                style={{
+                  color: '#6b7280',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
               >
                 复制内容
               </button>
@@ -488,7 +694,13 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                   navigator.clipboard.writeText(window.location.href);
                   alert('链接已复制到剪贴板！');
                 }}
-                className="text-gray-600 hover:text-gray-900"
+                style={{
+                  color: '#6b7280',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
               >
                 复制链接
               </button>
@@ -497,7 +709,10 @@ export default function ArticlePage({ params }: ArticlePageProps) {
         </div>
 
         {/* 最近文章列表 */}
-        <div className="border-t border-gray-100 px-6 py-8">
+        <div style={{
+          borderTop: '1px solid #e5e7eb',
+          padding: '32px'
+        }}>
           <RecentArticles />
         </div>
       </div>
