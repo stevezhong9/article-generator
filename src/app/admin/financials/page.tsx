@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface FinancialStats {
   totalRevenue: number;
@@ -10,7 +11,25 @@ interface FinancialStats {
   totalOrders: number;
   periodOrders: number;
   averageOrderValue: number;
-  recentPayments: any[];
+  recentPayments: {
+    id: string;
+    amount: number;
+    amount_usd?: string;
+    status: string;
+    user_name: string;
+    created_at: string;
+    stripe_payment_intent_id?: string;
+    orders?: {
+      user_profiles?: {
+        name?: string;
+        email?: string;
+        username?: string;
+      };
+      subscription_plans?: {
+        name?: string;
+      };
+    };
+  }[];
   revenueChart: { date: string; revenue: number; orders: number }[];
   topPlans: { planName: string; revenue: number; orders: number }[];
 }
@@ -78,9 +97,9 @@ export default function AdminFinancialsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <a href="/admin" className="text-blue-600 hover:text-blue-800 mr-4">
+              <Link href="/admin" className="text-blue-600 hover:text-blue-800 mr-4">
                 ← 返回概览
-              </a>
+              </Link>
               <h1 className="text-xl font-semibold text-gray-900">财务管理</h1>
             </div>
             <div className="flex items-center space-x-4">

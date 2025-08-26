@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import LongImageGenerator from '@/components/LongImageGenerator';
-import RecentArticles from '@/components/RecentArticles';
 import { MarketingData } from '@/components/MarketingInfo';
 import '@/styles/article.css';
 
@@ -93,13 +92,6 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
     loadParams();
   }, [params]);
 
-  useEffect(() => {
-    if (!username || !slug) return;
-
-    console.log('访问用户文章页面，username:', username, 'slug:', slug);
-    loadArticle();
-  }, [username, slug]);
-
   const loadArticle = async () => {
     try {
       console.log('从API获取用户文章:', username, slug);
@@ -147,6 +139,13 @@ export default function UserArticlePage({ params }: ArticlePageProps) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!username || !slug) return;
+
+    console.log('访问用户文章页面，username:', username, 'slug:', slug);
+    loadArticle();
+  }, [username, slug]);
 
   // 生成结构化数据
   const generateStructuredData = useCallback(() => {

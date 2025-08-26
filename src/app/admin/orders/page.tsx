@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface OrderData {
   id: number;
@@ -12,7 +13,7 @@ interface OrderData {
   status: 'pending' | 'paid' | 'cancelled' | 'refunded';
   stripe_payment_intent_id: string | null;
   stripe_session_id: string | null;
-  metadata: any;
+  metadata: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
   user_profiles: {
@@ -115,9 +116,9 @@ export default function AdminOrdersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <a href="/admin" className="text-blue-600 hover:text-blue-800 mr-4">
+              <Link href="/admin" className="text-blue-600 hover:text-blue-800 mr-4">
                 ← 返回概览
-              </a>
+              </Link>
               <h1 className="text-xl font-semibold text-gray-900">订单管理</h1>
             </div>
             <div className="flex items-center space-x-4">

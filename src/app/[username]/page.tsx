@@ -30,7 +30,13 @@ interface Article {
   title: string;
   description?: string;
   created_at: string;
-  marketing_data?: any;
+  marketing_data?: {
+    companyName?: string;
+    logo?: string;
+    website?: string;
+    email?: string;
+    phone?: string;
+  };
 }
 
 export default function UserPage({ params }: UserPageProps) {
@@ -48,11 +54,6 @@ export default function UserPage({ params }: UserPageProps) {
     }
     loadParams();
   }, [params]);
-
-  useEffect(() => {
-    if (!username) return;
-    loadUserData();
-  }, [username, session]);
 
   const loadUserData = async () => {
     try {
@@ -89,6 +90,11 @@ export default function UserPage({ params }: UserPageProps) {
       </div>
     );
   }
+
+  useEffect(() => {
+    if (!username) return;
+    loadUserData();
+  }, [username, session]);
 
   if (!userProfile) {
     return (

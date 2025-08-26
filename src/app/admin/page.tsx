@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface DashboardStats {
   totalUsers: number;
@@ -101,24 +102,24 @@ export default function AdminDashboard() {
         {/* 导航菜单 */}
         <div className="mb-8">
           <nav className="flex space-x-8">
-            <a href="/admin" className="text-blue-600 border-b-2 border-blue-600 px-1 pb-4 text-sm font-medium">
+            <Link href="/admin" className="text-blue-600 border-b-2 border-blue-600 px-1 pb-4 text-sm font-medium">
               概览
-            </a>
-            <a href="/admin/users" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
+            </Link>
+            <Link href="/admin/users" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
               用户管理
-            </a>
-            <a href="/admin/articles" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
+            </Link>
+            <Link href="/admin/articles" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
               文章管理
-            </a>
-            <a href="/admin/orders" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
+            </Link>
+            <Link href="/admin/orders" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
               订单管理
-            </a>
-            <a href="/admin/financials" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
+            </Link>
+            <Link href="/admin/financials" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
               财务管理
-            </a>
-            <a href="/admin/settings" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
+            </Link>
+            <Link href="/admin/settings" className="text-gray-500 hover:text-gray-700 px-1 pb-4 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
               系统设置
-            </a>
+            </Link>
           </nav>
         </div>
 
@@ -226,7 +227,7 @@ export default function AdminDashboard() {
 
         {/* 快捷操作 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <a href="/admin/users" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
+          <Link href="/admin/users" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow block">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">用户管理</h3>
@@ -236,9 +237,9 @@ export default function AdminDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
               </svg>
             </div>
-          </a>
+          </Link>
 
-          <a href="/admin/articles" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
+          <Link href="/admin/articles" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow block">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">文章管理</h3>
@@ -248,9 +249,9 @@ export default function AdminDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-          </a>
+          </Link>
 
-          <a href="/admin/orders" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
+          <Link href="/admin/orders" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow block">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">订单管理</h3>
@@ -260,9 +261,9 @@ export default function AdminDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
-          </a>
+          </Link>
 
-          <a href="/admin/financials" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
+          <Link href="/admin/financials" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow block">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">财务管理</h3>
@@ -272,9 +273,9 @@ export default function AdminDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
               </svg>
             </div>
-          </a>
+          </Link>
 
-          <a href="/admin/settings" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
+          <Link href="/admin/settings" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow block">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">系统设置</h3>
@@ -285,7 +286,7 @@ export default function AdminDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-          </a>
+          </Link>
         </div>
 
         {/* 返回首页 */}
