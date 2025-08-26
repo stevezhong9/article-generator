@@ -7,6 +7,7 @@ import ArticlePreview from '@/components/ArticlePreview';
 import ArticleShareModal from '@/components/ArticleShareModal';
 import UserStatusBar from '@/components/UserStatusBar';
 import Link from 'next/link';
+import Logo from '@/components/Logo';
 import { ArticleData } from '@/lib/scraper';
 import { MarketingData } from '@/components/MarketingInfo';
 import SearchParamsHandler from '@/components/SearchParamsHandler';
@@ -237,10 +238,11 @@ export default function Home() {
           
           <div className="flex flex-col items-center justify-center mb-8">
             <div className="mb-4 transform hover:scale-105 transition-transform duration-300">
-              <img 
-                src="/logo.png" 
-                alt="ShareX AI - AI超级分享平台" 
-                className="h-24 w-auto drop-shadow-2xl"
+              <Logo 
+                size="lg"
+                linkToHome={false}
+                priority
+                className="drop-shadow-2xl"
               />
             </div>
             <div className="text-center">
