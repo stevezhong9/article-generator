@@ -41,43 +41,10 @@ export default function Home() {
     handleScrape(url, marketingData);
   };
 
-  // 检测剪贴板URL
-  useEffect(() => {
-    const checkClipboard = async () => {
-      try {
-        // 只在非文章状态时检测剪贴板
-        if (article || saved) return;
-
-        // 检查是否支持 clipboard API
-        if (!navigator.clipboard || !navigator.clipboard.readText) return;
-
-        const clipboardText = await navigator.clipboard.readText();
-        
-        // 检查是否为URL格式
-        const urlRegex = /^https?:\/\/[^\s]+$/;
-        if (urlRegex.test(clipboardText.trim())) {
-          const url = clipboardText.trim();
-          
-          // 避免重复提示同一个URL
-          if (url !== clipboardUrl) {
-            setClipboardUrl(url);
-            setShowClipboardPrompt(true);
-          }
-        }
-      } catch (error) {
-        // 用户可能拒绝了剪贴板访问权限，静默处理
-        console.log('无法访问剪贴板:', error);
-      }
-    };
-
-    // 页面加载时检测一次
-    checkClipboard();
-
-    // 每3秒检测一次剪贴板变化
-    const interval = setInterval(checkClipboard, 3000);
-
-    return () => clearInterval(interval);
-  }, [article, saved]); // 移除 clipboardUrl 避免无限循环
+  // 暂时禁用剪贴板检测避免潜在的性能问题
+  // useEffect(() => {
+  //   // 剪贴板检测代码暂时注释掉
+  // }, [article, saved]);
 
   const handleClipboardConfirm = () => {
     setShowClipboardPrompt(false);
