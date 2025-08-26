@@ -27,11 +27,11 @@ export default function TermsOfServicePage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-sm p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            静态文本
+            服务条款
           </h1>
           
           <p className="text-gray-600 mb-8">
-            {t('legal.effectiveDate', { date: new Date().toLocaleDateString() })}
+            生效日期: {new Date().toLocaleDateString('zh-CN')}
           </p>
 
           <div className="prose prose-lg max-w-none">
@@ -182,7 +182,7 @@ export default function TermsOfServicePage() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">12. Contact Information</h2>
               <div className="space-y-4 text-gray-600">
-                <p>{t('legal.contactEmail', { email: 'legal@articlegen.ai' })}</p>
+                <p></p>
                 <p>Address: [Your Company Address]</p>
                 <p>Phone: [Your Phone Number]</p>
               </div>

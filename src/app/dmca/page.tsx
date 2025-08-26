@@ -23,11 +23,11 @@ export default function DMCAPolicyPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-sm p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            静态文本 Copyright Policy
+            DMCA 版权政策
           </h1>
           
           <p className="text-gray-600 mb-8">
-            {t('legal.lastUpdated', { date: new Date().toLocaleDateString() })}
+            最后更新: {new Date().toLocaleDateString('zh-CN')}
           </p>
 
           <div className="prose prose-lg max-w-none">
@@ -188,7 +188,7 @@ export default function DMCAPolicyPage() {
                   <p>Phone: [Your Phone Number]</p>
                   <p>Fax: [Your Fax Number]</p>
                 </div>
-                <p>For general inquiries: {t('legal.contactEmail', { email: 'legal@articlegen.ai' })}</p>
+                <p>For general inquiries: </p>
               </div>
             </section>
           </div>

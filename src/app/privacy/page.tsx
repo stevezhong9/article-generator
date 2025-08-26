@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
                 className="h-8 w-auto"
               />
             </a>
-            <a href="/" className="text-blue-600 hover:text-blue-800">u2190 u8fd4u56deu9996u9875</a>
+            <a href="/" className="text-blue-600 hover:text-blue-800">← 返回首页</a>
           </div>
         </div>
       </header>
@@ -27,11 +27,11 @@ export default function PrivacyPolicyPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-lg shadow-sm p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            静态文本
+            隐私政策
           </h1>
           
           <p className="text-gray-600 mb-8">
-            {t('legal.lastUpdated', { date: new Date().toLocaleDateString() })}
+            最后更新: {new Date().toLocaleDateString('zh-CN')}
           </p>
 
           <div className="prose prose-lg max-w-none">
@@ -158,7 +158,7 @@ export default function PrivacyPolicyPage() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">9. Contact Information</h2>
               <div className="space-y-4 text-gray-600">
-                <p>{t('legal.contactEmail', { email: 'privacy@articlegen.ai' })}</p>
+                <p></p>
                 <p>Address: [Your Company Address]</p>
                 <p>Phone: [Your Phone Number]</p>
               </div>

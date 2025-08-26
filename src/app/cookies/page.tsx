@@ -31,7 +31,7 @@ export default function CookiePolicyPage() {
           </h1>
           
           <p className="text-gray-600 mb-8">
-            {t('legal.lastUpdated', { date: new Date().toLocaleDateString() })}
+            最后更新: {new Date().toLocaleDateString('zh-CN')}
           </p>
 
           <div className="prose prose-lg max-w-none">
