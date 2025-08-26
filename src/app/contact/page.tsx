@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -67,7 +66,7 @@ export default function ContactPage() {
                 className="h-8 w-auto"
               />
             </a>
-            <LanguageSwitcher />
+            <a href="/" className="text-blue-600 hover:text-blue-800">← 返回首页</a>
           </div>
         </div>
       </header>
