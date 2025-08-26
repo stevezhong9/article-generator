@@ -81,7 +81,7 @@ export default function ContactPage() {
               联系我们
             </h1>
             <p className="text-lg text-gray-600">
-              We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+              我们很乐意听到您的声音。给我们发送消息，我们会尽快回复。
             </p>
           </div>
 
