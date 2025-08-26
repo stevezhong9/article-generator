@@ -145,7 +145,19 @@ export default function Home() {
             <h2 className="text-xl font-semibold mb-3">欢迎使用 ShareX AI</h2>
             <p className="text-gray-600 mb-4">请先登录以使用文章转载功能</p>
             <button
-              onClick={() => signIn('google')}
+              onClick={async () => {
+                try {
+                  console.log('尝试Google登录...');
+                  const result = await signIn('google', { 
+                    callbackUrl: '/',
+                    redirect: true 
+                  });
+                  console.log('登录结果:', result);
+                } catch (error) {
+                  console.error('登录错误:', error);
+                  alert('登录过程出现错误: ' + error.message);
+                }
+              }}
               className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
