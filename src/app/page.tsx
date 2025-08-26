@@ -168,6 +168,13 @@ export default function Home() {
               onClick={async () => {
                 try {
                   console.log('尝试Google登录...');
+                  
+                  // 检查环境变量
+                  const response = await fetch('/api/auth-debug');
+                  const debugInfo = await response.json();
+                  console.log('调试信息:', debugInfo);
+                  
+                  // 尝试登录
                   const result = await signIn('google', { 
                     callbackUrl: '/',
                     redirect: true 
@@ -191,53 +198,155 @@ export default function Home() {
           </div>
         )}
 
-        {/* 书签工具栏（对所有用户显示） */}
-        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6 mb-6">
-          <div className="flex items-start space-x-4">
-            <div className="text-3xl">🔖</div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-orange-900 mb-2">一键转发书签工具</h3>
-              <p className="text-sm text-orange-700 mb-4">
-                拖拽下方按钮到浏览器书签栏，在任意网页点击即可快速转发文章
-              </p>
-              
-              <div className="flex items-center space-x-4">
-                <a
-                  href={generateBookmarklet()}
-                  className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 cursor-move select-none"
-                  draggable="true"
-                  onDragStart={(e) => {
-                    e.dataTransfer.setData('text/html', `<a href="${generateBookmarklet()}">ShareX 一键转发</a>`);
-                  }}
-                >
-                  🚀 ShareX 一键转发
-                </a>
+        {/* 主要功能区域 - 一键转发表单 */}
+        {session && !article && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            {/* 左侧：一键转发表单 */}
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-xl shadow-lg border-2 border-blue-200 p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                  <span className="text-3xl mr-3">🚀</span>
+                  一键转发
+                </h2>
                 
-                <div className="text-sm text-gray-600">
-                  ← 拖拽到书签栏
-                </div>
-              </div>
-              
-              <div className="mt-3 text-xs text-orange-600 bg-orange-100 p-2 rounded">
-                💡 使用说明：将按钮拖拽到浏览器书签栏，在任意文章页面点击书签即可快速转发
+                {error && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                    {error}
+                  </div>
+                )}
+                
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const url = formData.get('url') as string;
+                  const marketingData = {
+                    logo: formData.get('logo') as string,
+                    companyName: formData.get('companyName') as string,
+                    phone: formData.get('phone') as string,
+                    email: formData.get('email') as string,
+                  };
+                  handleArticleSubmit(url, marketingData);
+                }} className="space-y-6">
+                  
+                  {/* 转发文章区域 - 主要突出 */}
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border-2 border-blue-300">
+                    <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center">
+                      <span className="text-xl mr-2">📋</span>
+                      转发文章
+                    </h3>
+                    <input
+                      type="url"
+                      name="url"
+                      defaultValue={initialUrl}
+                      placeholder="粘贴要转发的文章URL，如：https://example.com/article"
+                      required
+                      disabled={loading}
+                      className="w-full px-4 py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
+                    />
+                  </div>
+
+                  {/* 营销推广区域 */}
+                  <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-4 border border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                      <span className="text-xl mr-2">🎯</span>
+                      营销推广信息
+                      <span className="ml-2 text-xs text-gray-500">(可选)</span>
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Logo图标URL</label>
+                        <input
+                          type="url"
+                          name="logo"
+                          placeholder="https://example.com/logo.png"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">品牌名称</label>
+                        <input
+                          type="text"
+                          name="companyName"
+                          placeholder="您的品牌名称"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">联系电话</label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          placeholder="400-123-4567"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">联系邮箱</label>
+                        <input
+                          type="email"
+                          name="email"
+                          placeholder="contact@example.com"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 开始转发按钮 */}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-200 shadow-lg"
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        转发中...
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-center">
+                        <span className="text-2xl mr-2">🚀</span>
+                        开始转发
+                      </span>
+                    )}
+                  </button>
+                </form>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* 主要功能区域 */}
-        {session && !article && (
-          <div className="mb-6">
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                {error}
+            {/* 右侧：书签工具 */}
+            <div className="lg:col-span-1">
+              <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-xl p-6 h-fit">
+                <div className="text-center">
+                  <div className="text-4xl mb-3">🔖</div>
+                  <h3 className="text-lg font-semibold text-orange-900 mb-3">书签工具</h3>
+                  <p className="text-sm text-orange-700 mb-4">
+                    拖拽按钮到浏览器书签栏，在任意网页一键转发
+                  </p>
+                  
+                  <div className="flex flex-col items-center space-y-3">
+                    <a
+                      href={generateBookmarklet()}
+                      className="inline-flex items-center px-4 py-3 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 cursor-move select-none shadow-lg transform hover:scale-105 transition-all duration-200"
+                      draggable="true"
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/html', `<a href="${generateBookmarklet()}">ShareX 一键转发</a>`);
+                      }}
+                    >
+                      🚀 ShareX 一键转发
+                    </a>
+                    
+                    <div className="text-xs text-orange-600 bg-orange-100 p-2 rounded text-center">
+                      💡 拖拽到书签栏后，在任意文章页面点击即可快速转发
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
-            <ArticleForm 
-              onSubmit={handleArticleSubmit} 
-              loading={loading}
-              initialUrl={initialUrl}
-            />
+            </div>
           </div>
         )}
 

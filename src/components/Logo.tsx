@@ -33,8 +33,8 @@ export default function Logo({
         <Image 
           src="/logo.png" 
           alt="ShareX AI - AI超级分享平台" 
-          width={400}
-          height={100}
+          width={300}
+          height={75}
           priority={priority}
           className={`w-auto ${sizeClasses[size]} ${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
           onLoad={() => setIsLoading(false)}
