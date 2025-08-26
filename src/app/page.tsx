@@ -77,7 +77,7 @@ export default function Home() {
     const interval = setInterval(checkClipboard, 3000);
 
     return () => clearInterval(interval);
-  }, [article, saved, clipboardUrl]);
+  }, [article, saved]); // 移除 clipboardUrl 避免无限循环
 
   const handleClipboardConfirm = () => {
     setShowClipboardPrompt(false);

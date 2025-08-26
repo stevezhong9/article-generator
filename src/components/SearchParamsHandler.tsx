@@ -52,7 +52,7 @@ export default function SearchParamsHandler({
         }, 1000);
       }
     }
-  }, [searchParams, onUrlParam, onMarketingData, onAutoStart]);
+  }, [searchParams]); // 移除函数依赖避免无限循环
 
   return null; // 这是一个逻辑组件，不渲染任何UI
 }
