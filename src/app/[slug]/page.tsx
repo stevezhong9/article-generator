@@ -358,35 +358,87 @@ export default function ArticlePage({ params }: ArticlePageProps) {
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
         overflow: 'hidden'
       }}>
-        {/* 顶部品牌Logo区域 - 与长图模版一致 */}
-        {article.marketingData?.logo && (
+        {/* 顶部品牌Logo区域 - 根据营销信息显示 */}
+        {article.marketingData && (article.marketingData.logo || article.marketingData.companyName || article.marketingData.website || article.marketingData.email) && (
           <div style={{
             textAlign: 'center',
             padding: '32px 32px 24px',
             borderBottom: '1px solid #e5e7eb',
             backgroundColor: '#ffffff'
           }}>
-            <img 
-              src={article.marketingData.logo} 
-              alt="Brand Logo" 
-              style={{
-                height: '60px',
-                maxWidth: '200px',
-                objectFit: 'contain',
-                marginBottom: article.marketingData.companyName ? '12px' : '0',
-                display: 'block',
-                margin: '0 auto ' + (article.marketingData.companyName ? '12px' : '0') + ' auto'
-              }}
-            />
+            {/* Logo */}
+            {article.marketingData.logo && (
+              <img 
+                src={article.marketingData.logo} 
+                alt="Brand Logo" 
+                style={{
+                  height: '60px',
+                  maxWidth: '200px',
+                  objectFit: 'contain',
+                  marginBottom: '12px',
+                  display: 'block',
+                  margin: '0 auto 12px auto'
+                }}
+              />
+            )}
+            
+            {/* 公司名称 */}
             {article.marketingData.companyName && (
               <div style={{
-                fontSize: '16px',
-                color: '#6b7280',
-                fontWeight: '500'
+                fontSize: '18px',
+                color: '#1f2937',
+                fontWeight: '600',
+                marginBottom: '8px'
               }}>
                 {article.marketingData.companyName}
               </div>
             )}
+            
+            {/* 网址和邮箱 */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '16px',
+              fontSize: '14px',
+              flexWrap: 'wrap'
+            }}>
+              {article.marketingData.website && (
+                <a 
+                  href={article.marketingData.website.startsWith('http') ? article.marketingData.website : `https://${article.marketingData.website}`}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ 
+                    color: '#007AFF',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  🌐 {article.marketingData.website}
+                </a>
+              )}
+              
+              {article.marketingData.website && article.marketingData.email && (
+                <span style={{ color: '#d1d5db' }}>|</span>
+              )}
+              
+              {article.marketingData.email && (
+                <a 
+                  href={`mailto:${article.marketingData.email}`}
+                  style={{ 
+                    color: '#007AFF',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  📧 {article.marketingData.email}
+                </a>
+              )}
+            </div>
           </div>
         )}
         {/* 标签切换栏 - 与长图模版一致 */}
@@ -513,8 +565,8 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
 
-            {/* 转载来源 - 与长图模版一致 */}
-            {article.sourceUrl && (
+            {/* 转载来源 - 显示营销信息和原文链接 */}
+            {(article.sourceUrl || article.marketingData) && (
               <div style={{
                 marginTop: '32px',
                 paddingTop: '24px',
@@ -523,42 +575,125 @@ export default function ArticlePage({ params }: ArticlePageProps) {
               }}>
                 <div style={{
                   backgroundColor: '#f9fafb',
-                  padding: '16px',
-                  borderRadius: '8px',
+                  padding: '20px',
+                  borderRadius: '12px',
                   border: '1px solid #e5e7eb'
                 }}>
+                  {/* 转载信息标题 */}
                   <h4 style={{
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    marginBottom: '8px',
-                    color: '#374151'
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    marginBottom: '16px',
+                    color: '#1f2937'
                   }}>
-                    📄 转载来源
+                    📄 转载信息
                   </h4>
-                  <p style={{
-                    fontSize: '12px',
-                    marginBottom: '8px',
-                    color: '#6b7280'
-                  }}>
-                    本文转载自原作者，版权归原作者所有
-                  </p>
-                  <div style={{ fontSize: '12px' }}>
-                    <span style={{ color: '#6b7280' }}>
-                      原文链接: 
-                    </span>
-                    <a 
-                      href={article.sourceUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      style={{ 
-                        color: '#007AFF',
-                        wordBreak: 'break-all',
-                        textDecoration: 'underline'
-                      }}
-                    >
-                      {article.sourceUrl}
-                    </a>
-                  </div>
+                  
+                  {/* 营销推广信息 */}
+                  {article.marketingData && (article.marketingData.companyName || article.marketingData.website) && (
+                    <div style={{
+                      backgroundColor: '#ffffff',
+                      padding: '16px',
+                      borderRadius: '8px',
+                      border: '1px solid #e5e7eb',
+                      marginBottom: '16px'
+                    }}>
+                      <div style={{
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        marginBottom: '8px',
+                        color: '#374151'
+                      }}>
+                        🏢 转载方信息
+                      </div>
+                      
+                      {article.marketingData.companyName && (
+                        <div style={{
+                          fontSize: '16px',
+                          fontWeight: '600',
+                          color: '#1f2937',
+                          marginBottom: '8px'
+                        }}>
+                          {article.marketingData.companyName}
+                        </div>
+                      )}
+                      
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '16px',
+                        fontSize: '13px',
+                        flexWrap: 'wrap'
+                      }}>
+                        {article.marketingData.website && (
+                          <a 
+                            href={article.marketingData.website.startsWith('http') ? article.marketingData.website : `https://${article.marketingData.website}`}
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{ 
+                              color: '#007AFF',
+                              textDecoration: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            🌐 官网: {article.marketingData.website}
+                          </a>
+                        )}
+                        
+                        {article.marketingData.website && article.marketingData.email && (
+                          <span style={{ color: '#d1d5db' }}>|</span>
+                        )}
+                        
+                        {article.marketingData.email && (
+                          <a 
+                            href={`mailto:${article.marketingData.email}`}
+                            style={{ 
+                              color: '#007AFF',
+                              textDecoration: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            📧 邮箱: {article.marketingData.email}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* 原文链接 */}
+                  {article.sourceUrl && (
+                    <div>
+                      <p style={{
+                        fontSize: '12px',
+                        marginBottom: '8px',
+                        color: '#6b7280'
+                      }}>
+                        本文转载自原作者，版权归原作者所有
+                      </p>
+                      <div style={{ fontSize: '12px' }}>
+                        <span style={{ color: '#6b7280' }}>
+                          原文链接: 
+                        </span>
+                        <a 
+                          href={article.sourceUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style={{ 
+                            color: '#007AFF',
+                            wordBreak: 'break-all',
+                            textDecoration: 'underline'
+                          }}
+                        >
+                          {article.sourceUrl}
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

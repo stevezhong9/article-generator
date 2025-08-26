@@ -407,8 +407,8 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
             boxShadow: selectedTheme === 'gradient' ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
           }}
         >
-          {/* 顶部品牌Logo区域 */}
-          {article.marketingData?.logo && (
+          {/* 顶部品牌Logo区域 - 根据营销信息显示 */}
+          {article.marketingData && (article.marketingData.logo || article.marketingData.companyName || article.marketingData.website || article.marketingData.email) && (
             <div 
               style={{
                 textAlign: 'center',
@@ -418,29 +418,71 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
                 borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb'
               }}
             >
-              <img 
-                src={article.marketingData.logo} 
-                alt="Brand Logo"
-                style={{
-                  height: '60px',
-                  maxWidth: '200px',
-                  objectFit: 'contain',
-                  marginBottom: article.marketingData.companyName ? '12px' : '0',
-                  display: 'block',
-                  margin: '0 auto ' + (article.marketingData.companyName ? '12px' : '0') + ' auto'
-                }}
-              />
+              {/* Logo */}
+              {article.marketingData.logo && (
+                <img 
+                  src={article.marketingData.logo} 
+                  alt="Brand Logo"
+                  style={{
+                    height: '60px',
+                    maxWidth: '200px',
+                    objectFit: 'contain',
+                    marginBottom: '12px',
+                    display: 'block',
+                    margin: '0 auto 12px auto'
+                  }}
+                />
+              )}
+              
+              {/* 公司名称 */}
               {article.marketingData.companyName && (
                 <div 
                   style={{
-                    fontSize: '16px',
-                    color: selectedTheme === 'dark' ? '#9ca3af' : '#6b7280',
-                    fontWeight: '500'
+                    fontSize: '18px',
+                    color: selectedTheme === 'dark' ? '#ffffff' : '#1f2937',
+                    fontWeight: '600',
+                    marginBottom: '8px'
                   }}
                 >
                   {article.marketingData.companyName}
                 </div>
               )}
+              
+              {/* 网址和邮箱 */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '16px',
+                fontSize: '14px',
+                flexWrap: 'wrap'
+              }}>
+                {article.marketingData.website && (
+                  <div style={{ 
+                    color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                    🌐 {article.marketingData.website}
+                  </div>
+                )}
+                
+                {article.marketingData.website && article.marketingData.email && (
+                  <span style={{ color: selectedTheme === 'dark' ? '#4b5563' : '#d1d5db' }}>|</span>
+                )}
+                
+                {article.marketingData.email && (
+                  <div style={{ 
+                    color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                    📧 {article.marketingData.email}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -488,8 +530,8 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
             }}
           />
 
-          {/* 转载来源 */}
-          {article.sourceUrl && (
+          {/* 转载来源 - 显示营销信息和原文链接 */}
+          {(article.sourceUrl || article.marketingData) && (
             <div 
               style={{
                 marginTop: '32px',
@@ -502,44 +544,118 @@ export default function LongImageGenerator({ article }: LongImageGeneratorProps)
               <div 
                 style={{
                   backgroundColor: selectedTheme === 'dark' ? '#1f2937' : '#f9fafb',
-                  padding: '16px',
-                  borderRadius: '8px',
+                  padding: '20px',
+                  borderRadius: '12px',
                   border: '1px solid',
                   borderColor: selectedTheme === 'dark' ? '#374151' : '#e5e7eb'
                 }}
               >
+                {/* 转载信息标题 */}
                 <h4 
                   style={{
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    marginBottom: '8px',
-                    color: selectedTheme === 'dark' ? '#d1d5db' : '#374151'
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    marginBottom: '16px',
+                    color: selectedTheme === 'dark' ? '#ffffff' : '#1f2937'
                   }}
                 >
-                  📄 转载来源
+                  📄 转载信息
                 </h4>
-                <p 
-                  style={{
-                    fontSize: '12px',
-                    marginBottom: '8px',
-                    color: selectedTheme === 'dark' ? '#9ca3af' : '#6b7280'
-                  }}
-                >
-                  本文转载自原作者，版权归原作者所有
-                </p>
-                <div style={{ fontSize: '12px' }}>
-                  <span style={{ color: selectedTheme === 'dark' ? '#9ca3af' : '#6b7280' }}>
-                    原文链接: 
-                  </span>
-                  <span 
-                    style={{ 
-                      color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF',
-                      wordBreak: 'break-all'
-                    }}
-                  >
-                    {article.sourceUrl}
-                  </span>
-                </div>
+                
+                {/* 营销推广信息 */}
+                {article.marketingData && (article.marketingData.companyName || article.marketingData.website) && (
+                  <div style={{
+                    backgroundColor: selectedTheme === 'dark' ? '#374151' : '#ffffff',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    border: '1px solid',
+                    borderColor: selectedTheme === 'dark' ? '#4b5563' : '#e5e7eb',
+                    marginBottom: '16px'
+                  }}>
+                    <div style={{
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      marginBottom: '8px',
+                      color: selectedTheme === 'dark' ? '#d1d5db' : '#374151'
+                    }}>
+                      🏢 转载方信息
+                    </div>
+                    
+                    {article.marketingData.companyName && (
+                      <div style={{
+                        fontSize: '16px',
+                        fontWeight: '600',
+                        color: selectedTheme === 'dark' ? '#ffffff' : '#1f2937',
+                        marginBottom: '8px'
+                      }}>
+                        {article.marketingData.companyName}
+                      </div>
+                    )}
+                    
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: '16px',
+                      fontSize: '13px',
+                      flexWrap: 'wrap'
+                    }}>
+                      {article.marketingData.website && (
+                        <div style={{ 
+                          color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}>
+                          🌐 官网: {article.marketingData.website}
+                        </div>
+                      )}
+                      
+                      {article.marketingData.website && article.marketingData.email && (
+                        <span style={{ color: selectedTheme === 'dark' ? '#4b5563' : '#d1d5db' }}>|</span>
+                      )}
+                      
+                      {article.marketingData.email && (
+                        <div style={{ 
+                          color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}>
+                          📧 邮箱: {article.marketingData.email}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                {/* 原文链接 */}
+                {article.sourceUrl && (
+                  <div>
+                    <p 
+                      style={{
+                        fontSize: '12px',
+                        marginBottom: '8px',
+                        color: selectedTheme === 'dark' ? '#9ca3af' : '#6b7280'
+                      }}
+                    >
+                      本文转载自原作者，版权归原作者所有
+                    </p>
+                    <div style={{ fontSize: '12px' }}>
+                      <span style={{ color: selectedTheme === 'dark' ? '#9ca3af' : '#6b7280' }}>
+                        原文链接: 
+                      </span>
+                      <span 
+                        style={{ 
+                          color: selectedTheme === 'dark' ? '#60a5fa' : '#007AFF',
+                          wordBreak: 'break-all'
+                        }}
+                      >
+                        {article.sourceUrl}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
