@@ -13,34 +13,45 @@ export interface MarketingData {
 interface MarketingInfoProps {
   onUpdate: (data: MarketingData) => void;
   initialCollapsed?: boolean;
+  initialData?: MarketingData;
 }
 
-export default function MarketingInfo({ onUpdate, initialCollapsed = true }: MarketingInfoProps) {
+export default function MarketingInfo({ onUpdate, initialCollapsed = true, initialData = {} }: MarketingInfoProps) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
-  const [formData, setFormData] = useState<MarketingData>({});
-  const [logoPreview, setLogoPreview] = useState<string>('');
+  const [formData, setFormData] = useState<MarketingData>(initialData);
+  const [logoPreview, setLogoPreview] = useState<string>(initialData.logo || '');
 
-  // 从 localStorage 加载已保存的营销信息
+  // 从 localStorage 加载已保存的营销信息，或使用初始数据
   useEffect(() => {
-    const savedData = localStorage.getItem('marketing-info');
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        setFormData(parsed);
-        setLogoPreview(parsed.logo || '');
-        
-        // 如果有保存的数据，默认展开
-        if (Object.keys(parsed).length > 0 && Object.values(parsed).some(v => v)) {
-          setCollapsed(false);
+    let finalData = { ...initialData };
+    
+    // 如果没有初始数据，尝试从localStorage加载
+    if (Object.keys(initialData).length === 0) {
+      const savedData = localStorage.getItem('marketing-info');
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          finalData = parsed;
+        } catch (error) {
+          console.error('加载营销信息失败:', error);
         }
-        
-        // 通知父组件
-        onUpdate(parsed);
-      } catch (error) {
-        console.error('加载营销信息失败:', error);
       }
     }
-  }, []); // 移除 onUpdate 依赖，只在组件挂载时执行一次
+    
+    // 更新组件状态
+    if (Object.keys(finalData).length > 0) {
+      setFormData(finalData);
+      setLogoPreview(finalData.logo || '');
+      
+      // 如果有数据，默认展开
+      if (Object.values(finalData).some(v => v)) {
+        setCollapsed(false);
+      }
+      
+      // 通知父组件
+      onUpdate(finalData);
+    }
+  }, [initialData, onUpdate]);
 
   const handleInputChange = (field: keyof MarketingData, value: string) => {
     const newData = { ...formData, [field]: value };

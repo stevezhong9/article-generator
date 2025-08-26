@@ -7,18 +7,26 @@ interface ArticleFormProps {
   onSubmit: (url: string, marketingData?: MarketingData) => void;
   loading: boolean;
   initialUrl?: string;
+  initialMarketingData?: MarketingData;
 }
 
-export default function ArticleForm({ onSubmit, loading, initialUrl = '' }: ArticleFormProps) {
+export default function ArticleForm({ onSubmit, loading, initialUrl = '', initialMarketingData = {} }: ArticleFormProps) {
   const [url, setUrl] = useState(initialUrl);
-  const [marketingData, setMarketingData] = useState<MarketingData>({});
+  const [marketingData, setMarketingData] = useState<MarketingData>(initialMarketingData);
 
   // Update URL when initialUrl prop changes
   useEffect(() => {
     if (initialUrl && initialUrl !== url) {
       setUrl(initialUrl);
     }
-  }, [initialUrl]);
+  }, [initialUrl, url]);
+
+  // Update marketing data when initialMarketingData prop changes
+  useEffect(() => {
+    if (Object.keys(initialMarketingData).length > 0) {
+      setMarketingData(prev => ({ ...prev, ...initialMarketingData }));
+    }
+  }, [initialMarketingData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +60,10 @@ export default function ArticleForm({ onSubmit, loading, initialUrl = '' }: Arti
 
 
       {/* 营销推广信息组件 */}
-      <MarketingInfo onUpdate={handleMarketingUpdate} />
+      <MarketingInfo 
+        onUpdate={handleMarketingUpdate} 
+        initialData={marketingData}
+      />
 
         <button
           type="submit"

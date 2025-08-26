@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ArticleForm from '@/components/ArticleForm';
 import ArticlePreview from '@/components/ArticlePreview';
 import ArticleShareModal from '@/components/ArticleShareModal';
@@ -15,6 +16,51 @@ export default function Home() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [clipboardUrl, setClipboardUrl] = useState<string>('');
   const [showClipboardPrompt, setShowClipboardPrompt] = useState(false);
+  const [urlParamUrl, setUrlParamUrl] = useState<string>('');
+  const [initialMarketingData, setInitialMarketingData] = useState<MarketingData>({});
+  
+  const searchParams = useSearchParams();
+
+  // 处理URL参数
+  useEffect(() => {
+    if (searchParams) {
+      // 检查URL参数中的文章URL
+      const paramUrl = searchParams.get('url');
+      if (paramUrl) {
+        setUrlParamUrl(paramUrl);
+        // 如果有URL参数，不显示剪贴板提示
+        setShowClipboardPrompt(false);
+        setClipboardUrl('');
+      }
+
+      // 检查营销数据参数
+      const marketingData: MarketingData = {};
+      const companyName = searchParams.get('company') || searchParams.get('companyName');
+      const website = searchParams.get('website') || searchParams.get('site');
+      const email = searchParams.get('email') || searchParams.get('contact');
+      const phone = searchParams.get('phone') || searchParams.get('tel');
+      const logo = searchParams.get('logo');
+
+      if (companyName) marketingData.companyName = companyName;
+      if (website) marketingData.website = website;
+      if (email) marketingData.email = email;
+      if (phone) marketingData.phone = phone;
+      if (logo) marketingData.logo = logo;
+
+      if (Object.keys(marketingData).length > 0) {
+        setInitialMarketingData(marketingData);
+      }
+
+      // 如果有URL参数且所有必要信息都有，可以自动开始处理
+      const autoStart = searchParams.get('auto') === 'true';
+      if (paramUrl && autoStart) {
+        // 延迟一点时间让组件完全初始化
+        setTimeout(() => {
+          handleScrape(paramUrl, marketingData);
+        }, 1000);
+      }
+    }
+  }, [searchParams]);
 
   // 检测剪贴板URL
   useEffect(() => {
@@ -88,8 +134,19 @@ export default function Home() {
         });
         
         setArticle(result.data);
-        // 文章抓取成功后，自动显示分享对话框
-        setTimeout(() => setShowShareModal(true), 500);
+        
+        // 文章抓取成功后，自动保存以获取时间戳URL，然后显示分享对话框
+        setTimeout(async () => {
+          try {
+            await handleSave(result.data);
+            // 保存完成后再显示分享对话框
+            setTimeout(() => setShowShareModal(true), 500);
+          } catch (error) {
+            console.error('自动保存失败:', error);
+            // 即使保存失败，也显示分享对话框
+            setShowShareModal(true);
+          }
+        }, 500);
       } else {
         setError(result.error || '抓取失败');
       }
@@ -255,7 +312,8 @@ if(pinyin !== word) extractedKeywords.push(pinyin);
 }
 }
 }
-return extractedKeywords.slice(0,3).join('-') + '-' + Date.now().toString(36);
+var keywordSlug = extractedKeywords.slice(0,3).join('-');
+return (keywordSlug || 'article') + '-' + Date.now();
 }
 
 var slug = generateSlug(t);
@@ -449,7 +507,8 @@ alert('一键转发工具加载失败: '+err.message);
                 <ArticleForm 
                   onSubmit={handleScrape} 
                   loading={loading} 
-                  initialUrl={showClipboardPrompt ? '' : clipboardUrl} 
+                  initialUrl={urlParamUrl || (showClipboardPrompt ? '' : clipboardUrl)} 
+                  initialMarketingData={initialMarketingData}
                 />
               </div>
             </div>
@@ -503,6 +562,18 @@ alert('一键转发工具加载失败: '+err.message);
                       <div className="flex items-start">
                         <span className="font-medium mr-1">使用:</span>
                         <span>在任意网页点击书签即可转发</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 pt-3 border-t border-gray-200">
+                      <div className="text-xs text-gray-600 space-y-2">
+                        <div className="font-medium text-gray-700">💡 URL传参功能：</div>
+                        <div className="text-xs font-mono bg-gray-50 p-2 rounded text-gray-600">
+                          ?url=文章链接&company=公司名&auto=true
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          支持参数：url, company, website, email, phone, auto
+                        </div>
                       </div>
                     </div>
                   </div>
