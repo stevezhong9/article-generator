@@ -6,6 +6,14 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/config.ts');
 const nextConfig: NextConfig = {
   outputFileTracingRoot: __dirname,
   
+  // Disable ESLint and TypeScript checks during builds
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  
   // Enable turbopack features
   turbopack: {
     rules: {

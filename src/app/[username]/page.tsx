@@ -66,25 +66,26 @@ export default function UserPage({ params }: UserPageProps) {
     );
   }
 
-  const loadUserData = async () => {
-    try {
-      // 获取用户信息
-      const profileResponse = await fetch(`/api/user/${username}`);
-      const profileResult = await profileResponse.json();
-
-      if (profileResult.success) {
-        setUserProfile(profileResult.data.user);
-        setArticles(profileResult.data.articles);
-      }
-    } catch (error) {
-      console.error('加载用户数据失败:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (!username) return;
+    
+    const loadUserData = async () => {
+      try {
+        // 获取用户信息
+        const profileResponse = await fetch(`/api/user/${username}`);
+        const profileResult = await profileResponse.json();
+
+        if (profileResult.success) {
+          setUserProfile(profileResult.data.user);
+          setArticles(profileResult.data.articles);
+        }
+      } catch (error) {
+        console.error('加载用户数据失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadUserData();
   }, [username, session]);
 
