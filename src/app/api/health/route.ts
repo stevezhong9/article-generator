@@ -1,19 +1,27 @@
 import { NextResponse } from 'next/server';
-import { ArticleSupabase } from '@/lib/supabase';
+import { testDatabaseConnection, initializeDatabase } from '@/lib/supabase-init';
 
 export async function GET() {
   try {
-    // 测试Supabase连接
-    const pingResult = await ArticleSupabase.ping();
-    const stats = await ArticleSupabase.getStats();
+    // 测试数据库连接
+    const connectionTest = await testDatabaseConnection();
+    
+    if (!connectionTest.success) {
+      // 尝试初始化数据库
+      console.log('连接失败，尝试初始化数据库...');
+      const initialized = await initializeDatabase();
+      
+      if (!initialized) {
+        throw new Error(`数据库连接和初始化都失败: ${connectionTest.error}`);
+      }
+    }
 
     return NextResponse.json({
       success: true,
       status: 'healthy',
-      supabase: {
-        ping: pingResult,
-        stats: stats,
-        connected: true
+      database: {
+        connected: true,
+        message: connectionTest.message || '数据库连接正常'
       },
       timestamp: new Date().toISOString()
     });
@@ -25,7 +33,7 @@ export async function GET() {
       {
         success: false,
         status: 'unhealthy',
-        supabase: {
+        database: {
           connected: false,
           error: error instanceof Error ? error.message : 'Unknown error'
         },

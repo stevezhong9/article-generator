@@ -1,16 +1,24 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import MarketingInfo, { MarketingData } from './MarketingInfo';
 
 interface ArticleFormProps {
   onSubmit: (url: string, marketingData?: MarketingData) => void;
   loading: boolean;
+  initialUrl?: string;
 }
 
-export default function ArticleForm({ onSubmit, loading }: ArticleFormProps) {
-  const [url, setUrl] = useState('');
+export default function ArticleForm({ onSubmit, loading, initialUrl = '' }: ArticleFormProps) {
+  const [url, setUrl] = useState(initialUrl);
   const [marketingData, setMarketingData] = useState<MarketingData>({});
+
+  // Update URL when initialUrl prop changes
+  useEffect(() => {
+    if (initialUrl && initialUrl !== url) {
+      setUrl(initialUrl);
+    }
+  }, [initialUrl]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

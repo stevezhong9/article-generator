@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import ArticleForm from '@/components/ArticleForm';
 import ArticlePreview from '@/components/ArticlePreview';
 import ArticleShareModal from '@/components/ArticleShareModal';
@@ -13,6 +13,56 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<{ path: string; url: string } | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [clipboardUrl, setClipboardUrl] = useState<string>('');
+  const [showClipboardPrompt, setShowClipboardPrompt] = useState(false);
+
+  // 检测剪贴板URL
+  useEffect(() => {
+    const checkClipboard = async () => {
+      try {
+        // 只在非文章状态时检测剪贴板
+        if (article || saved) return;
+
+        // 检查是否支持 clipboard API
+        if (!navigator.clipboard || !navigator.clipboard.readText) return;
+
+        const clipboardText = await navigator.clipboard.readText();
+        
+        // 检查是否为URL格式
+        const urlRegex = /^https?:\/\/[^\s]+$/;
+        if (urlRegex.test(clipboardText.trim())) {
+          const url = clipboardText.trim();
+          
+          // 避免重复提示同一个URL
+          if (url !== clipboardUrl) {
+            setClipboardUrl(url);
+            setShowClipboardPrompt(true);
+          }
+        }
+      } catch (error) {
+        // 用户可能拒绝了剪贴板访问权限，静默处理
+        console.log('无法访问剪贴板:', error);
+      }
+    };
+
+    // 页面加载时检测一次
+    checkClipboard();
+
+    // 每3秒检测一次剪贴板变化
+    const interval = setInterval(checkClipboard, 3000);
+
+    return () => clearInterval(interval);
+  }, [article, saved, clipboardUrl]);
+
+  const handleClipboardConfirm = () => {
+    setShowClipboardPrompt(false);
+    // 这里会触发ArticleForm重新渲染并填入URL
+  };
+
+  const handleClipboardCancel = () => {
+    setShowClipboardPrompt(false);
+    setClipboardUrl('');
+  };
 
   const handleScrape = async (url: string, marketingData?: MarketingData) => {
     setLoading(true);
@@ -104,37 +154,141 @@ export default function Home() {
     return `javascript:(function(){
 try{
 console.log('一键转发工具启动...');
-var t=document.title||'Untitled';
+var t=document.title||document.querySelector('h1')?document.querySelector('h1').textContent||'':'';
+if(!t||t.trim()==''){
+t=document.querySelector('meta[property="og:title"]')?document.querySelector('meta[property="og:title"]').getAttribute('content')||'':'';
+}
+if(!t||t.trim()==''){
+var h=document.querySelector('h1,h2,h3')?document.querySelector('h1,h2,h3').textContent||'':'';
+t=h.substring(0,100);
+}
+if(!t||t.trim()==''){
+t='网页内容';
+}
+t=t.trim();
+console.log('提取的标题:',t);
 var u=window.location.href;
 var d=document.querySelector('meta[name="description"]');
 var desc=d?d.getAttribute('content')||'':'';
 var e=document.getElementById('share-popup-bookmarklet');
 if(e)e.remove();
+
+// 尝试从localStorage获取营销信息
+var savedMarketingData = {};
+try {
+var saved = localStorage.getItem('marketing-info');
+if (saved) savedMarketingData = JSON.parse(saved);
+} catch(e) {}
+
+// 创建营销表单弹窗
 var p=document.createElement('div');
 p.id='share-popup-bookmarklet';
-p.style.cssText='position:fixed;top:20px;right:20px;width:320px;background:#fff;border:2px solid #007AFF;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.3);z-index:2147483647;font-family:-apple-system,BlinkMacSystemFont,sans-serif;';
-p.innerHTML='<div style="padding:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h3 style="margin:0;color:#1f2937;font-size:16px;font-weight:600;">📤 一键转发</h3><button id="closeBtnBookmarklet" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280;">×</button></div><div style="margin-bottom:12px;"><div style="font-size:13px;color:#374151;margin-bottom:4px;">📝 '+t.substring(0,50)+(t.length>50?'...':'')+'</div><div style="font-size:11px;color:#6b7280;">正在生成分享链接...</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><button id="twitterBtnBookmarklet" style="display:flex;align-items:center;justify-content:center;padding:8px;background:#1DA1F2;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🐦 Twitter</button><button id="linkedinBtnBookmarklet" style="display:flex;align-items:center;justify-content:center;padding:8px;background:#0077B5;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">💼 LinkedIn</button></div><div style="margin-top:12px;text-align:center;"><a href="https://sharetox.com" target="_blank" style="font-size:11px;color:#6b7280;text-decoration:none;">SharetoX 转载工具</a></div></div>';
+p.style.cssText='position:fixed;top:20px;right:20px;width:380px;max-height:80vh;overflow-y:auto;background:#fff;border:2px solid #007AFF;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.3);z-index:2147483647;font-family:-apple-system,BlinkMacSystemFont,sans-serif;';
+
+// 营销表单HTML
+var formHtml = '<div style="padding:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h3 style="margin:0;color:#1f2937;font-size:16px;font-weight:600;">🚀 营销推广信息</h3><button id="closeBtnBookmarklet" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280;">×</button></div>';
+
+formHtml += '<div style="margin-bottom:12px;"><div style="font-size:13px;color:#374151;margin-bottom:4px;">📝 ' + t.substring(0,50) + (t.length>50?'...':'') + '</div><div style="font-size:11px;color:#6b7280;">填写营销信息后开始转发</div></div>';
+
+formHtml += '<div style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:#374151;margin-bottom:4px;">公司/品牌名称</label><input id="companyName" type="text" placeholder="例：科技创新公司" value="'+(savedMarketingData.companyName||'')+'" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-size:12px;"/></div>';
+
+formHtml += '<div style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:#374151;margin-bottom:4px;">官网链接</label><input id="website" type="url" placeholder="https://example.com" value="'+(savedMarketingData.website||'')+'" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-size:12px;"/></div>';
+
+formHtml += '<div style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:#374151;margin-bottom:4px;">联系邮箱</label><input id="email" type="email" placeholder="contact@example.com" value="'+(savedMarketingData.email||'')+'" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-size:12px;"/></div>';
+
+formHtml += '<div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:#374151;margin-bottom:4px;">联系电话</label><input id="phone" type="tel" placeholder="400-123-4567" value="'+(savedMarketingData.phone||'')+'" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-size:12px;"/></div>';
+
+formHtml += '<button id="startShareBtn" style="width:100%;padding:12px;background:#007AFF;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;">🚀 开始转发</button>';
+
+formHtml += '<div style="text-align:center;"><a href="https://sharetox.com" target="_blank" style="font-size:11px;color:#6b7280;text-decoration:none;">SharetoX 转载工具</a></div></div>';
+
+p.innerHTML = formHtml;
 document.body.appendChild(p);
+
+// 绑定关闭按钮
 document.getElementById('closeBtnBookmarklet').onclick=function(){p.remove();};
-function saveAndShare(){
+
+// 绑定开始转发按钮
+document.getElementById('startShareBtn').onclick=function(){
+// 收集营销数据
+var marketingData = {
+companyName: document.getElementById('companyName').value,
+website: document.getElementById('website').value,
+email: document.getElementById('email').value,
+phone: document.getElementById('phone').value
+};
+
+// 保存到localStorage
+try {
+localStorage.setItem('marketing-info', JSON.stringify(marketingData));
+} catch(e) {}
+
+// 显示处理中状态
+p.innerHTML = '<div style="padding:16px;text-align:center;"><div style="margin-bottom:12px;"><h3 style="margin:0;color:#1f2937;font-size:16px;font-weight:600;">📤 正在处理...</h3></div><div style="margin-bottom:12px;"><div style="font-size:13px;color:#374151;margin-bottom:4px;">📝 ' + t.substring(0,50) + (t.length>50?'...':'') + '</div><div style="font-size:11px;color:#6b7280;">正在生成分享链接...</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><button id="twitterBtnBookmarklet" disabled style="display:flex;align-items:center;justify-content:center;padding:8px;background:#ccc;color:white;border:none;border-radius:6px;font-size:12px;">🐦 Twitter</button><button id="linkedinBtnBookmarklet" disabled style="display:flex;align-items:center;justify-content:center;padding:8px;background:#ccc;color:white;border:none;border-radius:6px;font-size:12px;">💼 LinkedIn</button></div></div>';
+
+// 开始保存和分享流程
+saveAndShare(marketingData);
+};
+
+function saveAndShare(marketingData){
 console.log('正在保存文章到SharetoX...');
 var content=document.body.innerHTML.substring(0,5000);
-var slug=t.toLowerCase().replace(/[^\w\u4e00-\u9fff]+/g,'-').replace(/^-+|-+$/g,'').substring(0,50);
-if(!slug||slug.length<3){
-var urlParts=u.split('/');
-var pathSlug=urlParts[urlParts.length-1]||urlParts[urlParts.length-2]||'';
-pathSlug=pathSlug.replace(/\.(html|htm|php|jsp|asp)$/i,'').replace(/[^\w-]/g,'').substring(0,30);
-slug=pathSlug||('article-'+Date.now().toString(36));
+
+// 生成slug
+function generateSlug(title){
+var s=title.toLowerCase().trim();
+// 简化的关键词提取
+var words=s.split(/[\\s\\-\\_\\.\\,\\;\\:\\!\\?\\(\\)\\[\\]\\{\\}\\/\\\\\"\\\']+/);
+var extractedKeywords=[];
+for(var i=0;i<words.length;i++){
+var word=words[i];
+if(word.length>1){
+if(word.match(/^[a-z]+$/)){
+extractedKeywords.push(word);
+} else {
+// 简单的中文转拼音（只处理常见字符）
+var pinyin = word.replace(/[\\u4e00-\\u9fff]/g, function(char) {
+var map = {'中':'zhong','国':'guo','人':'ren','工':'gong','智':'zhi','能':'neng','技':'ji','术':'shu','文':'wen','章':'zhang','新':'xin','科':'ke','学':'xue','公':'gong','司':'si','产':'chan','品':'pin','网':'wang','站':'zhan','系':'xi','统':'tong','平':'ping','台':'tai','数':'shu','据':'ju','应':'ying','用':'yong'};
+return map[char] || char;
+});
+if(pinyin !== word) extractedKeywords.push(pinyin);
 }
-console.log('生成的slug:',slug);
-fetch('https://sharetox.com/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u,title:t,content:'<p>'+desc+'</p><div>'+content+'</div>',slug:slug,description:desc})}).then(function(r){return r.json();}).then(function(data){
+}
+}
+return extractedKeywords.slice(0,3).join('-') + '-' + Date.now().toString(36);
+}
+
+var slug = generateSlug(t);
+
+fetch('https://sharetox.com/api/save',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({
+url:u,
+title:t,
+content:'<p>'+desc+'</p><div>'+content+'</div>',
+slug:slug,
+description:desc,
+marketingData: marketingData
+})
+}).then(function(r){return r.json();}).then(function(data){
 console.log('保存结果:',data);
 if(data.success){
 var shareUrl='https://sharetox.com'+data.data.url;
 var twitterText=encodeURIComponent('📄 '+t+' '+shareUrl);
 var linkedinUrl=encodeURIComponent(shareUrl);
+
+// 更新分享按钮
+document.getElementById('twitterBtnBookmarklet').disabled=false;
+document.getElementById('twitterBtnBookmarklet').style.background='#1DA1F2';
+document.getElementById('twitterBtnBookmarklet').style.cursor='pointer';
 document.getElementById('twitterBtnBookmarklet').onclick=function(){window.open('https://twitter.com/intent/tweet?text='+twitterText,'_blank');};
+
+document.getElementById('linkedinBtnBookmarklet').disabled=false;
+document.getElementById('linkedinBtnBookmarklet').style.background='#0077B5';  
+document.getElementById('linkedinBtnBookmarklet').style.cursor='pointer';
 document.getElementById('linkedinBtnBookmarklet').onclick=function(){window.open('https://www.linkedin.com/sharing/share-offsite/?url='+linkedinUrl,'_blank');};
+
 console.log('分享链接已生成:',shareUrl);
 }else{
 console.error('保存失败:',data.error);
@@ -149,8 +303,9 @@ document.getElementById('twitterBtnBookmarklet').onclick=function(){window.open(
 document.getElementById('linkedinBtnBookmarklet').onclick=function(){window.open('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(u),'_blank');};
 });
 }
-saveAndShare();
-setTimeout(function(){if(document.body.contains(p))p.remove();},15000);
+
+// 自动关闭弹窗
+setTimeout(function(){if(document.body.contains(p))p.remove();},30000);
 console.log('一键转发工具加载完成');
 }catch(err){
 console.error('Bookmarklet error:',err);
@@ -249,12 +404,53 @@ alert('一键转发工具加载失败: '+err.message);
           </div>
         )}
 
+        {/* 剪贴板URL提示 */}
+        {showClipboardPrompt && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-xl p-6 max-w-md mx-4">
+              <div className="text-center mb-4">
+                <div className="text-2xl mb-2">📋</div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  检测到剪贴板中的URL
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  是否使用此链接进行转发？
+                </p>
+                <div className="bg-gray-100 rounded-lg p-3 mb-4">
+                  <code className="text-xs text-gray-700 break-all">
+                    {clipboardUrl}
+                  </code>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleClipboardCancel}
+                  className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleClipboardConfirm}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  确认使用
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {!article && !saved && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* 左侧：网址表单 - 2/3 宽度 */}
             <div className="lg:col-span-2">
               <div className="w-full">
-                <ArticleForm onSubmit={handleScrape} loading={loading} />
+                <ArticleForm 
+                  onSubmit={handleScrape} 
+                  loading={loading} 
+                  initialUrl={showClipboardPrompt ? '' : clipboardUrl} 
+                />
               </div>
             </div>
             
