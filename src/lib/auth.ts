@@ -66,9 +66,9 @@ export const authOptions: NextAuthOptions = {
         const urlObj = new URL(url, baseUrl);
         const callbackUrl = urlObj.searchParams.get('callbackUrl') || '/';
         
-        // 检查是否来自弹窗（通过 referrer 或特定参数判断）
-        const isPopupLogin = url.includes('/api/auth/signin/google') || 
-                           url.includes('popup') ||
+        // 检查是否来自弹窗（通过 URL 参数判断）
+        const isPopupLogin = urlObj.searchParams.get('popup') === 'true' || 
+                           url.includes('popup=true') ||
                            (typeof window !== 'undefined' && window.opener);
         
         if (isPopupLogin) {
@@ -95,7 +95,9 @@ export const authOptions: NextAuthOptions = {
       }
     }
   },
-  // 移除自定义页面配置，使用 NextAuth 默认页面
+  pages: {
+    signIn: '/auth/signin',
+  },
   session: {
     strategy: 'database'
   }

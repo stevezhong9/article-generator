@@ -34,8 +34,13 @@ export default function PricingPage() {
       const response = await fetch('/api/subscription/plans');
       const result = await response.json();
       
+      console.log('Plans API response:', result);
+      
       if (result.success) {
-        setPlans(result.data);
+        setPlans(result.data || []);
+        console.log('Loaded plans:', result.data);
+      } else {
+        console.error('API returned error:', result.error);
       }
     } catch (error) {
       console.error('获取套餐失败:', error);
@@ -103,6 +108,29 @@ export default function PricingPage() {
 
   const freePlan = plans.find(p => p.price_usd === 0);
   const paidPlans = plans.filter(p => p.price_usd > 0).sort((a, b) => a.price_usd - b.price_usd);
+
+  // If no plans found, show a message
+  if (plans.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">套餐暂未配置</h2>
+          <p className="text-gray-600 mb-6">系统正在初始化中，套餐信息暂不可用。</p>
+          <Link
+            href="/"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            ← 返回首页
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">

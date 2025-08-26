@@ -107,9 +107,9 @@ export default function GoogleLoginModal({
       
       const features = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
       
-      // 构建登录 URL
+      // 直接使用 NextAuth callback URL 触发 Google OAuth
       const baseUrl = window.location.origin;
-      const loginUrl = `${baseUrl}/api/auth/signin/google?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+      const loginUrl = `${baseUrl}/api/auth/signin/google?popup=true&callbackUrl=${encodeURIComponent(callbackUrl)}`;
       
       const popup = window.open(loginUrl, 'google-oauth', features);
       resolve(popup);

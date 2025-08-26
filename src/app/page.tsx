@@ -187,46 +187,6 @@ export default function Home() {
           <p className="text-sm text-gray-500">一键转发文章，智能营销推广</p>
         </div>
 
-        {/* User Authentication */}
-        <div className="mb-6">
-          <GoogleAuthButton
-            onSuccess={() => {
-              console.log('登录成功');
-              setError(null);
-            }}
-            onError={(error) => {
-              console.error('登录失败:', error);
-              setError(`登录失败：${error}`);
-            }}
-            onLogout={() => {
-              console.log('已退出登录');
-              setSavedFormData(null);
-              setError('已退出登录');
-            }}
-            showUserInfo={true}
-            buttonText="登录以保存和管理文章"
-          />
-        </div>
-
-        {/* Additional User Actions */}
-        {session && (
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-            <div className="flex space-x-4 justify-center">
-              <Link 
-                href={`/${session.user?.username || 'user'}`} 
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                我的文章
-              </Link>
-              <Link 
-                href="/profile" 
-                className="px-4 py-2 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-              >
-                个人资料
-              </Link>
-            </div>
-          </div>
-        )}
 
 
         {/* 主要功能区域 - 一键转发表单 */}
@@ -353,8 +313,29 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 右侧：书签工具 */}
+            {/* 右侧：用户登录和书签工具 */}
             <div className="lg:col-span-1">
+              {/* User Authentication */}
+              <div className="mb-4">
+                <GoogleAuthButton
+                  onSuccess={() => {
+                    console.log('登录成功');
+                    setError(null);
+                  }}
+                  onError={(error) => {
+                    console.error('登录失败:', error);
+                    setError(error);
+                  }}
+                  onLogout={() => {
+                    console.log('已退出登录');
+                  }}
+                  callbackUrl="/"
+                  showUserInfo={true}
+                  buttonText="使用 Google 登录"
+                />
+              </div>
+              
+              {/* 书签工具 */}
               <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-xl p-6 h-fit">
                 <div className="text-center">
                   <div className="text-4xl mb-3">🔖</div>
